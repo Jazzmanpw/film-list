@@ -1,4 +1,5 @@
 .build
 build
+.idea
 web_modules
 node_modules
