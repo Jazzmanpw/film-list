@@ -4,6 +4,8 @@ import { useSetRecoilState } from 'recoil'
 import { normalizedFilms } from './atoms'
 import { fetchFilmsByKeyword } from './kpapi'
 import { Film, NormalizedFilms, normalizeFilms } from './normalization'
+import filmInput from './film-input.module.sass'
+import filmList from './list.module.sass'
 
 const FilmInput: React.FC = () => {
   const [keyword, setValue] = useState('')
@@ -24,15 +26,28 @@ const FilmInput: React.FC = () => {
     )
   return (
     <div>
-      <input type="text" onChange={onChange} />
+      <input className={filmInput.input} type="text" onChange={onChange} />
       {suggestedFilms ? (
-        <div>
+        <div className={filmInput.list}>
           {suggestedFilms.result.map((id) => {
             const film = suggestedFilms.entities.films[id]
             return (
-              <div key={id} onClick={onFilmClick(film)}>
-                <span>{film.nameRu}</span>
-                <span>({film.nameEn})</span>
+              <div
+                className={filmInput.item}
+                key={id}
+                onClick={onFilmClick(film)}
+              >
+                <span className={filmList.primaryTitle}>{film.nameRu} </span>
+                {film.nameEn ? (
+                  <span className={filmList.secondaryTitle}>{film.nameEn}</span>
+                ) : null}
+                <a
+                  className={filmList.sourceLink}
+                  href={`https://www.kinopoisk.ru/film/${film.filmId}/`}
+                  target="_blank"
+                >
+                  {/* no content for now, just the icon */}
+                </a>
               </div>
             )
           })}

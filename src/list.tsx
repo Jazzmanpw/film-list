@@ -1,7 +1,7 @@
 import React from 'react'
 import { useRecoilValue } from 'recoil'
 import { films as filmsAtom } from './atoms'
-import filmList from './film-list.module.sass'
+import filmList from './list.module.sass'
 import type { Film } from './normalization'
 
 const List: React.FC = () => {
