@@ -1,0 +1,13 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  color: black;
+  font-family: Calibri, sans-serif;
+}
+
+#root {
+  margin: auto;
+  max-width: 1000px;
+}

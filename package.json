@@ -7,6 +7,8 @@
     "lint": "prettier --check \"src/**/*.{js,jsx,ts,tsx}\""
   },
   "dependencies": {
+    "@snowpack/plugin-sass": "^1.2.0",
+    "immer": "^8.0.0",
     "normalizr": "^3.6.1",
     "react": "^17.0.1",
     "react-dom": "^17.0.0",

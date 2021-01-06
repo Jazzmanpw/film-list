@@ -3,12 +3,13 @@ import ReactDOM from 'react-dom'
 import { RecoilRoot } from 'recoil'
 import FilmInput from './film-input'
 import List from './list'
+import './index.css'
 
 ReactDOM.render(
   <React.StrictMode>
     <RecoilRoot>
-      <List />
       <FilmInput />
+      <List />
     </RecoilRoot>
   </React.StrictMode>,
   document.getElementById('root'),
