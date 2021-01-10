@@ -1,4 +1,13 @@
 {
+  "name": "film-list",
+  "license": "MIT",
+  "description": "see readme for description",
+  "version": "0.0.1",
+  "author": {
+    "name": "Dmitry Shpak",
+    "email": "hummer.revolver@gmail.com",
+    "url": "https://vk.com/hummer__revolver"
+  },
   "scripts": {
     "start": "snowpack dev",
     "build": "snowpack build",
