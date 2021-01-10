@@ -1,11 +1,15 @@
+import { faTimes } from '@fortawesome/free-solid-svg-icons'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import React from 'react'
 import { useRecoilValue } from 'recoil'
-import { films as filmsAtom } from './atoms'
+import { films as filmsAtom, useRemoveFilm } from './atoms'
 import filmList from './list.module.sass'
 import type { Film } from './normalization'
 
 const List: React.FC = () => {
   const films = useRecoilValue(filmsAtom)
+  const removeFilm = useRemoveFilm()
+
   return (
     <div className={filmList.container}>
       {films.map((film) => (
@@ -18,6 +22,11 @@ const List: React.FC = () => {
           <div className={filmList.description}>
             <div className={filmList.primaryTitle}>{film.nameRu}</div>
             <div className={filmList.secondaryTitle}>{film.nameEn}</div>
+            <FontAwesomeIcon
+              icon={faTimes}
+              className={filmList.times}
+              onClick={() => removeFilm(film)}
+            />
           </div>
         </div>
       ))}

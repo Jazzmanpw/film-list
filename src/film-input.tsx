@@ -1,29 +1,19 @@
-import produce from 'immer'
 import React, { useEffect, useRef, useState } from 'react'
-import { useSetRecoilState } from 'recoil'
-import { normalizedFilms } from './atoms'
-import { fetchFilmsByKeyword } from './kpapi'
-import { Film, NormalizedFilms, normalizeFilms } from './normalization'
+import { useAddFilm } from './atoms'
 import filmInput from './film-input.module.sass'
+import { fetchFilmsByKeyword } from './kpapi'
 import filmList from './list.module.sass'
+import type { NormalizedFilms } from './normalization'
 
 const FilmInput: React.FC = () => {
   const [keyword, setValue] = useState('')
-  const setFilms = useSetRecoilState(normalizedFilms)
+  const addFilm = useAddFilm()
   const suggestedFilms = useFetchedFilms(keyword)
 
-  const onChange = ({
+  const onChange: React.ChangeEventHandler<HTMLInputElement> = ({
     target: { value },
-  }: React.ChangeEvent<HTMLInputElement>) => setValue(value)
-  const onFilmClick = (film: Film) => () =>
-    setFilms((films) =>
-      films
-        ? produce(films, (films) => {
-            films.entities.films[film.filmId] = film
-            films.result.push(film.filmId)
-          })
-        : normalizeFilms([film]),
-    )
+  }) => setValue(value)
+
   return (
     <div>
       <input className={filmInput.input} type="text" onChange={onChange} />
@@ -35,7 +25,7 @@ const FilmInput: React.FC = () => {
               <div
                 className={filmInput.item}
                 key={id}
-                onClick={onFilmClick(film)}
+                onClick={() => addFilm(film)}
               >
                 <span className={filmList.primaryTitle}>{film.nameRu} </span>
                 {film.nameEn ? (

@@ -16,7 +16,7 @@ An app to store films you've watched or want to watch, with your comments, ratin
 ## Plan of development
 
 - [x] request films from an API
-- [ ] store films in the local storage
+- [x] store films in the local storage
 - [ ] add a custom film (if not found in api)
 - [ ] local storage versioning
 - [ ] two lists instead of one

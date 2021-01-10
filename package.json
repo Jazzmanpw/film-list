@@ -19,6 +19,9 @@
     "lint": "prettier --check \"src/**/*.{js,jsx,ts,tsx}\""
   },
   "dependencies": {
+    "@fortawesome/fontawesome-svg-core": "^1.2.32",
+    "@fortawesome/free-solid-svg-icons": "^5.15.1",
+    "@fortawesome/react-fontawesome": "^0.1.14",
     "@snowpack/plugin-sass": "^1.2.0",
     "immer": "^8.0.0",
     "normalizr": "^3.6.1",

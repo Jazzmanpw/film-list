@@ -8,8 +8,8 @@ type RawFilm = {
   year: string
   description: string
   filmLength: string
-  countries: { country: string }[]
-  genres: { genre: string }[]
+  countries: ({ country: string } | string)[]
+  genres: ({ genre: string } | string)[]
   rating: string
   ratingVoteCount: number
   posterUrl: string
@@ -23,8 +23,10 @@ const film = new schema.Entity(
     idAttribute: 'filmId',
     processStrategy: (rawFilm: RawFilm) => ({
       ...rawFilm,
-      countries: rawFilm.countries.map((c) => c.country),
-      genres: rawFilm.genres.map((g) => g.genre),
+      countries: rawFilm.countries.map((c) =>
+        typeof c === 'string' ? c : c.country,
+      ),
+      genres: rawFilm.genres.map((g) => (typeof g === 'string' ? g : g.genre)),
     }),
   },
 )
