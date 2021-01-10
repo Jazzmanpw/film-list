@@ -8,6 +8,9 @@
     "email": "hummer.revolver@gmail.com",
     "url": "https://vk.com/hummer__revolver"
   },
+  "repository": {
+    "url": "htps://github.com/Jazzmanpw/film-list"
+  },
   "scripts": {
     "start": "snowpack dev",
     "build": "snowpack build",
