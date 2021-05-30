@@ -10,19 +10,10 @@ module.exports = {
     '@snowpack/plugin-typescript',
     '@snowpack/plugin-sass',
   ],
-  install: [
-    /* ... */
-  ],
-  installOptions: {
-    /* ... */
-  },
   devOptions: {
     open: 'none',
   },
   buildOptions: {
-    /* ... */
-  },
-  proxy: {
     /* ... */
   },
   alias: {
