@@ -1,8 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { useAddFilm } from './atoms'
-import filmInput from './film-input.module.sass'
+import ExternalLink from './external-link'
 import { fetchFilmsByKeyword } from './kpapi'
-import filmList from './list.module.sass'
 import type { NormalizedFilms } from './model/film'
 
 const FilmInput: React.FC = () => {
@@ -15,33 +14,35 @@ const FilmInput: React.FC = () => {
   }) => setValue(value)
 
   return (
-    <div>
-      <input className={filmInput.input} type="text" onChange={onChange} />
+    <div className="flex-shrink-0 lg:w-1/3 lg:overflow-y-auto 2xl:w-1/4">
+      <input
+        className="px-2 py-0.5 w-full border-2 rounded-sm outline-none focus:border-blue-300 lg:sticky lg:top-0"
+        type="text"
+        placeholder="Ищите фильмы по названию"
+        onChange={onChange}
+      />
       {suggestedFilms ? (
-        <div className={filmInput.list}>
+        <ul className="w-full lg:overflow-auto">
           {suggestedFilms.result.map((id) => {
             const film = suggestedFilms.entities.films[id]
             return (
-              <div
-                className={filmInput.item}
+              <li
+                className="p-0.5 align-middle cursor-pointer hover:bg-gray-100"
                 key={id}
                 onClick={() => addFilm(film)}
               >
-                <span className={filmList.primaryTitle}>{film.nameRu} </span>
+                <span className="font-semibold">{film.nameRu} </span>
                 {film.nameEn ? (
-                  <span className={filmList.secondaryTitle}>{film.nameEn}</span>
+                  <span className="text-gray-500">{film.nameEn}</span>
                 ) : null}
-                <a
-                  className={filmList.sourceLink}
+                <ExternalLink
                   href={`https://www.kinopoisk.ru/film/${film.filmId}/`}
                   target="_blank"
-                >
-                  {/* no content for now, just the icon */}
-                </a>
-              </div>
+                />
+              </li>
             )
           })}
-        </div>
+        </ul>
       ) : null}
     </div>
   )

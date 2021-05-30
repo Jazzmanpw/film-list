@@ -3,12 +3,13 @@ module.exports = {
   mount: {
     public: { url: '/', static: true },
     src: { url: '/dist' },
+    assets: { url: '/assets' },
   },
   plugins: [
     '@snowpack/plugin-react-refresh',
     '@snowpack/plugin-dotenv',
     '@snowpack/plugin-typescript',
-    '@snowpack/plugin-sass',
+    '@snowpack/plugin-postcss',
   ],
   devOptions: {
     open: 'none',
