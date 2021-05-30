@@ -1,4 +1,4 @@
-import { normalizeFilms } from './normalization'
+import Film from './model/film'
 
 const headers = new Headers({
   'X-API-KEY': localStorage.getItem('kpapi-token') as string,
@@ -15,7 +15,7 @@ export async function fetchFilmsByKeyword(
       { headers, signal },
     )
     const data = await response.json()
-    return normalizeFilms(data.films)
+    return Film.normalizeFilms(data.films)
   } catch (err) {
     if (!err.message.includes('The user aborted a request')) {
       throw err

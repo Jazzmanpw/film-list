@@ -4,7 +4,7 @@ import React from 'react'
 import { useRecoilValue } from 'recoil'
 import { films as filmsAtom, useRemoveFilm } from './atoms'
 import filmList from './list.module.sass'
-import type { Film } from './normalization'
+import type { FilmData } from './model/film'
 
 const List: React.FC = () => {
   const films = useRecoilValue(filmsAtom)
@@ -36,7 +36,7 @@ const List: React.FC = () => {
 
 export default List
 
-function filmToString(film: Film): string {
+function filmToString(film: FilmData): string {
   return [film.nameRu, film.nameEn && `(${film.nameEn})`]
     .filter(Boolean)
     .join(' ')

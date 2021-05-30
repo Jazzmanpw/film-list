@@ -1,5 +1,9 @@
 import { normalize, schema } from 'normalizr'
 
+export default {
+  normalizeFilms,
+}
+
 type RawFilm = {
   filmId: number
   nameRu: string
@@ -31,9 +35,9 @@ const film = new schema.Entity(
   },
 )
 
-export type Film = typeof film extends schema.Entity<infer T> ? T : never
-export function normalizeFilms(rawFilms: Film[]) {
-  return normalize<Film[], { films: { [id: number]: Film } }, number[]>(
+export type FilmData = typeof film extends schema.Entity<infer T> ? T : never
+export function normalizeFilms(rawFilms: RawFilm[]) {
+  return normalize<RawFilm[], { films: { [id: number]: FilmData } }, number[]>(
     rawFilms,
     [film],
   )

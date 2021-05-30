@@ -1,6 +1,6 @@
 import produce from 'immer'
 import { atom, selector, useSetRecoilState } from 'recoil'
-import { Film, NormalizedFilms, normalizeFilms } from './normalization'
+import Film, { FilmData, NormalizedFilms } from './model/film'
 import { createStorageEffect, storageKeys } from './storage'
 
 export const normalizedFilms = atom({
@@ -9,7 +9,7 @@ export const normalizedFilms = atom({
   effects_UNSTABLE: [createStorageEffect(storageKeys.films)],
 })
 
-export const films = selector<Film[]>({
+export const films = selector<FilmData[]>({
   key: 'films',
   get: ({ get }) => {
     const normFilms = get(normalizedFilms)
@@ -21,21 +21,21 @@ export const films = selector<Film[]>({
 
 export function useAddFilm() {
   const setFilms = useSetRecoilState(normalizedFilms)
-  return (film: Film) => {
+  return (film: FilmData) => {
     setFilms((films) =>
       films
         ? produce(films, (films) => {
             films.entities.films[film.filmId] = film
             films.result.push(film.filmId)
           })
-        : normalizeFilms([film]),
+        : Film.normalizeFilms([film]),
     )
   }
 }
 
 export function useRemoveFilm() {
   const setFilms = useSetRecoilState(normalizedFilms)
-  return (film: Film) => {
+  return (film: FilmData) => {
     setFilms(
       (films) =>
         films &&

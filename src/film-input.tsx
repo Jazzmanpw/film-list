@@ -3,7 +3,7 @@ import { useAddFilm } from './atoms'
 import filmInput from './film-input.module.sass'
 import { fetchFilmsByKeyword } from './kpapi'
 import filmList from './list.module.sass'
-import type { NormalizedFilms } from './normalization'
+import type { NormalizedFilms } from './model/film'
 
 const FilmInput: React.FC = () => {
   const [keyword, setValue] = useState('')
