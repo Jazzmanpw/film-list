@@ -4,6 +4,7 @@ module.exports = {
     public: { url: '/', static: true },
     src: { url: '/dist' },
     assets: { url: '/assets' },
+    'node_modules/reactjs-popup/dist': { url: '/reactjs-popup', static: true },
   },
   plugins: [
     '@snowpack/plugin-react-refresh',

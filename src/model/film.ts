@@ -1,6 +1,7 @@
 import { normalize, schema } from 'normalizr'
 
 export default {
+  createCustom,
   normalizeFilms,
 }
 
@@ -44,3 +45,19 @@ export function normalizeFilms(rawFilms: RawFilm[]) {
 }
 
 export type NormalizedFilms = ReturnType<typeof normalizeFilms>
+
+export type CustomFilm = Partial<FilmData> &
+  Pick<FilmData, 'nameRu' | 'nameEn' | 'posterUrl' | 'posterUrlPreview'>
+function createCustom(film: CustomFilm): Omit<FilmData, 'filmId'> {
+  return {
+    type: '',
+    year: '',
+    description: '',
+    filmLength: '',
+    countries: [],
+    genres: [],
+    rating: '',
+    ratingVoteCount: 0,
+    ...film,
+  }
+}

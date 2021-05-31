@@ -14,7 +14,7 @@ const List: React.FC = () => {
       <ul className="grid gap-4 md:grid-cols-2 2xl:grid-cols-3">
         {films.map((film) => (
           <li
-            className="relative flex gap-4 lg:overflow-auto"
+            className="group relative flex gap-4 lg:overflow-auto"
             key={film.filmId}
           >
             <img
@@ -27,7 +27,7 @@ const List: React.FC = () => {
               <div className="text-gray-500">{film.nameEn}</div>
               <FontAwesomeIcon
                 icon={faTimes}
-                className="absolute top-0 right-1 cursor-pointer hover:text-gray-600"
+                className="absolute top-1 right-1 cursor-pointer hover:text-red-600 lg:text-red-500 lg:opacity-0 lg:group-hover:opacity-100"
                 onClick={() => removeFilm(film)}
               />
             </div>

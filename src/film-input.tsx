@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react'
+import CustomFilmButton from './custom-film-button'
 import { useAddFilm } from './atoms'
 import ExternalLink from './external-link'
 import { fetchFilmsByKeyword } from './kpapi'
@@ -16,7 +17,7 @@ const FilmInput: React.FC = () => {
   return (
     <div className="flex-shrink-0 lg:w-1/3 lg:overflow-y-auto 2xl:w-1/4">
       <input
-        className="px-2 py-0.5 w-full border-2 rounded-sm outline-none focus:border-blue-300 lg:sticky lg:top-0"
+        className="input lg:sticky lg:top-0"
         type="text"
         placeholder="Ищите фильмы по названию"
         onChange={onChange}
@@ -27,7 +28,7 @@ const FilmInput: React.FC = () => {
             const film = suggestedFilms.entities.films[id]
             return (
               <li
-                className="p-0.5 align-middle cursor-pointer hover:bg-gray-100"
+                className="p-0.5 align-middle cursor-pointer hover:bg-red-100"
                 key={id}
                 onClick={() => addFilm(film)}
               >
@@ -42,6 +43,9 @@ const FilmInput: React.FC = () => {
               </li>
             )
           })}
+          <li className="p-1" key="add-custom-film">
+            <CustomFilmButton />
+          </li>
         </ul>
       ) : null}
     </div>
