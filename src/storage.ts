@@ -6,22 +6,59 @@ export const storageKeys = {
 
 type StorageKey = typeof storageKeys[keyof typeof storageKeys]
 
-export function createStorageEffect<T>(key: StorageKey): AtomEffect<T> {
+export function createStorageEffect<T>(
+  key: StorageKey,
+  version: number,
+): AtomEffect<T> {
+  const storage = createStorage<T>(key, version)
   return ({ onSet, setSelf }) => {
-    const prevValue = localStorage.getItem(key)
+    const prevValue = storage.get()
     if (prevValue) {
-      try {
-        setSelf(JSON.parse(prevValue) as T)
-      } catch (e) {
-        console.error(`failed to parse storage data by ${key} key`, e)
-      }
+      setSelf(prevValue)
     }
     onSet((newValue) => {
       if (newValue instanceof DefaultValue) {
-        localStorage.removeItem(key)
+        storage.remove()
       } else {
-        localStorage.setItem(key, JSON.stringify(newValue))
+        storage.set(newValue)
       }
     })
+  }
+}
+
+function createStorage<T>(key: string, version: number) {
+  validateStorage(key, version)
+  return {
+    get() {
+      try {
+        const raw = localStorage.getItem(key)
+        return raw && ((JSON.parse(raw)?.[version] as T) ?? null)
+      } catch (e) {
+        console.error(`failed to parse storage data by ${key} key`, e)
+        localStorage.removeItem(key)
+        return null
+      }
+    },
+    set(value: T) {
+      localStorage.setItem(key, JSON.stringify({ [version]: value }))
+    },
+    remove() {
+      localStorage.removeItem(key)
+    },
+  }
+}
+
+function validateStorage(key: string, version: number) {
+  const initRawValue = localStorage.getItem(key)
+  if (initRawValue) {
+    try {
+      const initValue = JSON.parse(initRawValue)
+      if (version in initValue) {
+        return
+      }
+    } catch (e) {
+      console.warn(`failed to parse initial ${key} value`, e)
+    }
+    localStorage.removeItem(key)
   }
 }

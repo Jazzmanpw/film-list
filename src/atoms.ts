@@ -6,7 +6,7 @@ import { createStorageEffect, storageKeys } from './storage'
 export const normalizedFilms = atom({
   default: null as NormalizedFilms | null,
   key: 'normalizedFilms',
-  effects_UNSTABLE: [createStorageEffect(storageKeys.films)],
+  effects_UNSTABLE: [createStorageEffect(storageKeys.films, 0)],
 })
 
 export const films = selector<FilmData[]>({
