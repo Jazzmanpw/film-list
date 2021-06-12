@@ -2,7 +2,7 @@ import React from 'react'
 import { useForm, SubmitHandler } from 'react-hook-form'
 import Popup from 'reactjs-popup'
 import { useAddCustomFilm } from './atoms'
-import Film, { CustomFilm } from './model/film'
+import Film, { CustomFilm } from '../model/film'
 
 const customFilmAttributes = [
   { key: 'nameRu' as const, text: 'Русское название' },

@@ -1,9 +1,9 @@
 import React, { useEffect, useRef, useState } from 'react'
 import CustomFilmButton from './custom-film-button'
 import { useAddFilm } from './atoms'
-import ExternalLink from './external-link'
-import { fetchFilmsByKeyword } from './kpapi'
-import type { NormalizedFilms } from './model/film'
+import ExternalLink from '../external-link'
+import { fetchFilmsByKeyword } from '../kpapi'
+import type { NormalizedFilms } from '../model/film'
 
 const FilmInput: React.FC = () => {
   const [keyword, setValue] = useState('')

@@ -3,7 +3,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import React from 'react'
 import { useRecoilValue } from 'recoil'
 import { films as filmsAtom, useRemoveFilm } from './atoms'
-import type { FilmData } from './model/film'
+import type { FilmData } from '../model/film'
 
 const List: React.FC = () => {
   const films = useRecoilValue(filmsAtom)

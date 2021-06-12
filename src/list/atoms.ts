@@ -1,7 +1,7 @@
 import produce from 'immer'
 import { atom, selector, useRecoilValue, useSetRecoilState } from 'recoil'
-import Film, { FilmData, NormalizedFilms } from './model/film'
-import { createStorageEffect, storageKeys } from './storage'
+import Film, { FilmData, NormalizedFilms } from '../model/film'
+import { createStorageEffect, storageKeys } from '../storage'
 
 export const normalizedFilms = atom({
   default: null as NormalizedFilms | null,
