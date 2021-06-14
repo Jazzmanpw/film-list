@@ -1,6 +1,12 @@
 import produce from 'immer'
-import { atom, selector, useRecoilValue, useSetRecoilState } from 'recoil'
-import Film, { FilmData, NormalizedFilms } from '../model/film'
+import {
+  atom,
+  selector,
+  selectorFamily,
+  useRecoilValue,
+  useSetRecoilState,
+} from 'recoil'
+import Film, { FilmData, NormalizedFilms, Status } from '../model/film'
 import { createStorageEffect, storageKeys } from '../storage'
 
 export const normalizedFilms = atom({
@@ -9,14 +15,23 @@ export const normalizedFilms = atom({
   effects_UNSTABLE: [createStorageEffect(storageKeys.films, 0)],
 })
 
-export const films = selector<FilmData[]>({
+export const films = selectorFamily<FilmData[], { status?: Status }>({
   key: 'films',
-  get({ get }) {
-    const normFilms = get(normalizedFilms)
-    return normFilms
-      ? normFilms.result.map((id) => normFilms.entities.films[id])
-      : []
-  },
+  get:
+    ({ status }) =>
+    ({ get }) => {
+      const normFilms = get(normalizedFilms)
+      if (!normFilms) {
+        return []
+      }
+      const filmDataList = normFilms.result.map(
+        (id) => normFilms.entities.films[id],
+      )
+
+      return status
+        ? filmDataList.filter((f) => (status === Status.new) === !f.seen)
+        : filmDataList
+    },
 })
 
 const nextCustomIdSelector = selector<number>({
@@ -62,6 +77,25 @@ export function useRemoveFilm() {
         produce(films, (films) => {
           delete films.entities.films[film.filmId]
           films.result = films.result.filter((id) => id !== film.filmId)
+        }),
+    )
+  }
+}
+
+export function useEditFilm<T>(
+  editor: (film: FilmData, arg: T) => FilmData,
+  filmId: number,
+) {
+  const setFilms = useSetRecoilState(normalizedFilms)
+  return (arg: T) => {
+    setFilms(
+      (films) =>
+        films &&
+        produce(films, (films) => {
+          films.entities.films[filmId] = editor(
+            films.entities.films[filmId],
+            arg,
+          )
         }),
     )
   }

@@ -5,6 +5,11 @@ export default {
   normalizeFilms,
 }
 
+export enum Status {
+  seen = 'seen',
+  new = 'new',
+}
+
 type RawFilm = {
   filmId: number
   nameRu: string
@@ -36,7 +41,9 @@ const film = new schema.Entity(
   },
 )
 
-export type FilmData = typeof film extends schema.Entity<infer T> ? T : never
+export type FilmData = typeof film extends schema.Entity<infer T>
+  ? T & { seen?: boolean }
+  : never
 export function normalizeFilms(rawFilms: RawFilm[]) {
   return normalize<RawFilm[], { films: { [id: number]: FilmData } }, number[]>(
     rawFilms,

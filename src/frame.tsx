@@ -9,8 +9,8 @@ import HomeContent from './home/content'
 import ListContent from './list/content'
 
 const pages = [
-  { pathname: '/', title: 'Главная', exact: true },
-  { pathname: '/list', title: 'Список' },
+  { url: '/', title: 'Главная', exact: true },
+  { url: '/list', title: 'Список' },
 ]
 
 export default function Frame() {
@@ -19,12 +19,12 @@ export default function Frame() {
       <header>
         <nav>
           <ul className="flex gap-4">
-            {pages.map(({ pathname, title, exact }) => (
-              <li key={pathname}>
+            {pages.map(({ url, title, exact }) => (
+              <li key={url}>
                 <NavLink
                   className="block text-red-700 font-semibold"
                   activeClassName="font-bold"
-                  to={pathname}
+                  to={url}
                   exact={exact}
                 >
                   {title}

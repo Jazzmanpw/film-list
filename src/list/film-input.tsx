@@ -1,14 +1,17 @@
 import React, { useEffect, useRef, useState } from 'react'
-import CustomFilmButton from './custom-film-button'
-import { useAddFilm } from './atoms'
+import { useParams } from 'react-router-dom'
 import ExternalLink from '../external-link'
 import { fetchFilmsByKeyword } from '../kpapi'
 import type { NormalizedFilms } from '../model/film'
+import { Status } from '../model/film'
+import { useAddFilm } from './atoms'
+import CustomFilmButton from './custom-film-button'
 
 const FilmInput: React.FC = () => {
   const [keyword, setValue] = useState('')
   const addFilm = useAddFilm()
   const suggestedFilms = useFetchedFilms(keyword)
+  const { status } = useParams<{ status?: Status }>()
 
   const onChange: React.ChangeEventHandler<HTMLInputElement> = ({
     target: { value },
@@ -30,7 +33,9 @@ const FilmInput: React.FC = () => {
               <li
                 className="p-0.5 align-middle cursor-pointer hover:bg-red-100"
                 key={id}
-                onClick={() => addFilm(film)}
+                onClick={() =>
+                  addFilm({ ...film, seen: status === Status.seen })
+                }
               >
                 <span className="font-semibold">{film.nameRu} </span>
                 {film.nameEn ? (
