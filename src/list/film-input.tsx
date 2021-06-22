@@ -1,4 +1,5 @@
-import React, { useEffect, useRef, useState } from 'react'
+import { path, pipe } from 'ramda'
+import React, { ChangeEvent, useEffect, useRef, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import ExternalLink from '../external-link'
 import { fetchFilmsByKeyword } from '../kpapi'
@@ -13,9 +14,10 @@ const FilmInput: React.FC = () => {
   const suggestedFilms = useFetchedFilms(keyword)
   const { status } = useParams<{ status?: Status }>()
 
-  const onChange: React.ChangeEventHandler<HTMLInputElement> = ({
-    target: { value },
-  }) => setValue(value)
+  const onChange: React.ChangeEventHandler<HTMLInputElement> = pipe(
+    path(['target', 'value']) as (e: ChangeEvent<HTMLInputElement>) => string,
+    setValue,
+  )
 
   return (
     <div className="flex-shrink-0 lg:w-1/3 lg:overflow-y-auto 2xl:w-1/4">

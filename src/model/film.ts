@@ -1,4 +1,5 @@
 import { normalize, schema } from 'normalizr'
+import { lensPath, lensProp } from 'ramda'
 
 export default {
   createCustom,
@@ -52,6 +53,12 @@ export function normalizeFilms(rawFilms: RawFilm[]) {
 }
 
 export type NormalizedFilms = ReturnType<typeof normalizeFilms>
+
+export const lenses = {
+  film: (filmId: number) =>
+    lensPath<NormalizedFilms, FilmData>(['entities', 'films', filmId]),
+  result: lensProp<NormalizedFilms, 'result'>('result'),
+}
 
 export type CustomFilm = Partial<FilmData> &
   Pick<FilmData, 'nameRu' | 'nameEn' | 'posterUrl' | 'posterUrlPreview'>

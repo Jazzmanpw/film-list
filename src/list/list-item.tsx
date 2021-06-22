@@ -1,8 +1,10 @@
 import { faTimes } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { assoc, prop } from 'ramda'
 import React, { PropsWithChildren, useMemo } from 'react'
 import type { FilmData } from '../model/film'
 import SwitchButton from '../switch-button'
+import { joinTruthy } from '../utils'
 import { useEditFilm, useRemoveFilm } from './atoms'
 
 type Props = {
@@ -11,10 +13,7 @@ type Props = {
 
 export default function ListItem({ film }: Props) {
   const remove = useRemoveFilm()
-  const setSeen = useEditFilm<boolean>(
-    (film, seen) => ({ ...film, seen }),
-    film.filmId,
-  )
+  const setSeen = useEditFilm<boolean>(assoc('seen'), film.filmId)
   const seenSwitchData = useMemo(
     () => [
       {
@@ -39,7 +38,7 @@ export default function ListItem({ film }: Props) {
       <img
         className="w-1/4 object-cover object-center sm:w-1/6 md:w-1/4 xl:w-1/6 2xl:w-1/4"
         src={film.posterUrlPreview}
-        alt={filmToString(film)}
+        alt={joinTruthy([film.nameRu, film.nameEn && `(${film.nameEn})`])}
       />
       <div className="flex-1">
         <div className="font-semibold pr-4">{film.nameRu}</div>
@@ -47,7 +46,7 @@ export default function ListItem({ film }: Props) {
         <SwitchButton
           propsArr={seenSwitchData}
           childComponent={Button}
-          createKey={(p) => p.children}
+          createKey={prop('children')}
         />
         <FontAwesomeIcon
           icon={faTimes}
@@ -57,12 +56,6 @@ export default function ListItem({ film }: Props) {
       </div>
     </li>
   )
-}
-
-function filmToString(film: FilmData): string {
-  return [film.nameRu, film.nameEn && `(${film.nameEn})`]
-    .filter(Boolean)
-    .join(' ')
 }
 
 type ButtonProps = {
@@ -82,9 +75,7 @@ function Button({
   return (
     <button
       role="button"
-      className={[className, active && activeClassName]
-        .filter(Boolean)
-        .join(' ')}
+      className={joinTruthy([className, active && activeClassName])}
       onClick={onClick}
     >
       {children}

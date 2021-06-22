@@ -1,3 +1,4 @@
+import { pipe } from 'ramda'
 import React from 'react'
 import { useForm, SubmitHandler } from 'react-hook-form'
 import Popup from 'reactjs-popup'
@@ -19,9 +20,10 @@ export default function CustomFilmButton() {
   const { handleSubmit, register, reset } = useForm<CustomFilm>()
   const addCustomFilm = useAddCustomFilm()
 
-  const onSubmit: SubmitHandler<CustomFilm> = (customFilm) => {
-    addCustomFilm(Film.createCustom(customFilm))
-  }
+  const onSubmit: SubmitHandler<CustomFilm> = pipe(
+    Film.createCustom,
+    addCustomFilm,
+  )
 
   return (
     <Popup
@@ -34,10 +36,10 @@ export default function CustomFilmButton() {
         <form
           className="grid sm:p-2 sm:grid-cols-popup-content"
           key="form"
-          onSubmit={handleSubmit((film) => {
-            onSubmit(film)
+          onSubmit={(e) => {
+            handleSubmit(onSubmit)(e)
             close()
-          })}
+          }}
         >
           <h1 className="font-medium text-2xl" key="title">
             Введите данные о фильме

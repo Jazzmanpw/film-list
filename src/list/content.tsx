@@ -1,3 +1,4 @@
+import { prop } from 'ramda'
 import React from 'react'
 import { NavLink, Route, Switch, useRouteMatch } from 'react-router-dom'
 import SwitchButton from '../switch-button'
@@ -22,7 +23,7 @@ export default function ListContent() {
             children: l.title,
           }))}
           childComponent={NavLink}
-          createKey={(l) => l.to}
+          createKey={prop('to')}
         />
       </header>
       <Switch>

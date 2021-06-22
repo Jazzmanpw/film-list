@@ -1,4 +1,27 @@
-import produce from 'immer'
+import {
+  __,
+  append,
+  contains,
+  dec,
+  defaultTo,
+  dissocPath,
+  equals,
+  filter,
+  identity,
+  map,
+  merge,
+  min,
+  not,
+  over,
+  pipe,
+  prop,
+  propSatisfies,
+  reduce,
+  reject,
+  set,
+  unless,
+  view,
+} from 'ramda'
 import {
   atom,
   selector,
@@ -6,7 +29,7 @@ import {
   useRecoilValue,
   useSetRecoilState,
 } from 'recoil'
-import Film, { FilmData, NormalizedFilms, Status } from '../model/film'
+import Film, { FilmData, lenses, NormalizedFilms, Status } from '../model/film'
 import { createStorageEffect, storageKeys } from '../storage'
 
 export const normalizedFilms = atom({
@@ -24,47 +47,61 @@ export const films = selectorFamily<FilmData[], { status?: Status }>({
       if (!normFilms) {
         return []
       }
-      const filmDataList = normFilms.result.map(
-        (id) => normFilms.entities.films[id],
-      )
 
-      return status
-        ? filmDataList.filter((f) => (status === Status.new) === !f.seen)
-        : filmDataList
+      const process = pipe(
+        prop('result') as (films: typeof normFilms) => number[],
+        map(prop(__, normFilms.entities.films)),
+        status
+          ? filter<FilmData, 'array'>(
+              propSatisfies<boolean | undefined, FilmData>(
+                pipe(not, equals(status === Status.new)),
+                'seen',
+              ),
+            )
+          : identity,
+      )
+      return process(normFilms)
     },
 })
 
 const nextCustomIdSelector = selector<number>({
   key: 'nextCustomId',
   get({ get }) {
-    const ids = get(normalizedFilms)?.result
-    if (ids?.length) {
-      const minId = Math.min(...ids)
-      return minId >= 0 ? -1 : minId - 1
-    }
-    return -1
+    return pipe<number[] | undefined, number[], number, number>(
+      defaultTo([]),
+      reduce<number, number>(min, 0),
+      dec,
+    )(get(normalizedFilms)?.result)
   },
 })
 
 export function useAddFilm() {
   const setFilms = useSetRecoilState(normalizedFilms)
-  return (film: FilmData) => setFilms(addFilm(film))
+  return pipe(addFilm, setFilms)
 }
 
 export function useAddCustomFilm() {
   const nextCustomId = useRecoilValue(nextCustomIdSelector)
   const setFilms = useSetRecoilState(normalizedFilms)
-  return (customFilm: ReturnType<typeof Film.createCustom>) =>
-    setFilms(addFilm({ filmId: nextCustomId, ...customFilm }))
+  return pipe(
+    merge({ filmId: nextCustomId }) as (
+      customFilm: ReturnType<typeof Film.createCustom>,
+    ) => FilmData,
+    addFilm,
+    setFilms,
+  )
 }
 
 function addFilm(film: FilmData) {
   return (films: NormalizedFilms | null) =>
     films
-      ? produce(films, (films) => {
-          films.entities.films[film.filmId] = film
-          films.result.push(film.filmId)
-        })
+      ? unless(
+          pipe(view(lenses.result), contains(film.filmId)),
+          pipe(
+            set(lenses.film(film.filmId), film),
+            over(lenses.result, append(film.filmId)),
+          ),
+        )(films)
       : Film.normalizeFilms([film])
 }
 
@@ -74,29 +111,20 @@ export function useRemoveFilm() {
     setFilms(
       (films) =>
         films &&
-        produce(films, (films) => {
-          delete films.entities.films[film.filmId]
-          films.result = films.result.filter((id) => id !== film.filmId)
-        }),
+        pipe(
+          dissocPath<NormalizedFilms>(['entities', 'films', film.filmId]),
+          over(lenses.result, reject(equals(film.filmId))),
+        )(films),
     )
   }
 }
 
 export function useEditFilm<T>(
-  editor: (film: FilmData, arg: T) => FilmData,
+  editor: (arg: T) => (film: FilmData) => FilmData,
   filmId: number,
 ) {
   const setFilms = useSetRecoilState(normalizedFilms)
   return (arg: T) => {
-    setFilms(
-      (films) =>
-        films &&
-        produce(films, (films) => {
-          films.entities.films[filmId] = editor(
-            films.entities.films[filmId],
-            arg,
-          )
-        }),
-    )
+    setFilms((films) => films && over(lenses.film(filmId), editor(arg), films))
   }
 }
