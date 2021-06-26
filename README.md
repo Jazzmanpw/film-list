@@ -20,7 +20,7 @@ An app to store films you've watched or want to watch, with your comments, ratin
 - [x] add a custom film (if not found in api)
 - [x] local storage versioning
 - [x] two lists instead of one
-- [ ] "just watched" button to move from "to watch" to "have seen"
+- [ ] "undo" popup on a timer
 - [ ] custom tags
 - [ ] search by genres and custom tags
 - [ ] negative search by genres and tags
