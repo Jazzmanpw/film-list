@@ -20,7 +20,7 @@ const FilmInput: React.FC = () => {
   )
 
   return (
-    <div className="flex-shrink-0 lg:w-1/3 lg:overflow-y-auto 2xl:w-1/4">
+    <div className="col-span-4 col-start-1 row-span-full 2xl:col-span-3 lg:overflow-y-auto">
       <input
         className="input lg:sticky lg:top-0"
         type="text"

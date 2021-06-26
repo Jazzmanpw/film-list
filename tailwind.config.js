@@ -6,6 +6,9 @@ module.exports = {
       gridTemplateColumns: {
         'popup-content': '1fr auto',
       },
+      gridTemplateRows: {
+        'with-header': 'auto 1fr',
+      },
     },
   },
   variants: {
