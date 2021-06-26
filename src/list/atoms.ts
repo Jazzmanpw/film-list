@@ -1,5 +1,6 @@
 import {
   __,
+  always,
   append,
   contains,
   dec,
@@ -31,6 +32,7 @@ import {
 } from 'recoil'
 import Film, { FilmData, lenses, NormalizedFilms, Status } from '../model/film'
 import { createStorageEffect, storageKeys } from '../storage'
+import { Editor, ifTruthy, WhenTruthy, whenTruthy } from '../utils'
 
 export const normalizedFilms = atom({
   default: null as NormalizedFilms | null,
@@ -93,28 +95,28 @@ export function useAddCustomFilm() {
 }
 
 function addFilm(film: FilmData) {
-  return (films: NormalizedFilms | null) =>
-    films
-      ? unless(
-          pipe(view(lenses.result), contains(film.filmId)),
-          pipe(
-            set(lenses.film(film.filmId), film),
-            over(lenses.result, append(film.filmId)),
-          ),
-        )(films)
-      : Film.normalizeFilms([film])
+  return ifTruthy<NormalizedFilms, null, NormalizedFilms | null>(
+    unless(
+      pipe(view(lenses.result), contains(film.filmId)),
+      pipe(
+        set(lenses.film(film.filmId), film),
+        over(lenses.result, append(film.filmId)),
+      ),
+    ),
+    always(Film.normalizeFilms([film])),
+  )
 }
 
 export function useRemoveFilm() {
   const setFilms = useSetRecoilState(normalizedFilms)
   return (film: FilmData) => {
     setFilms(
-      (films) =>
-        films &&
+      whenTruthy<NormalizedFilms, null>(
         pipe(
           dissocPath<NormalizedFilms>(['entities', 'films', film.filmId]),
           over(lenses.result, reject(equals(film.filmId))),
-        )(films),
+        ),
+      ),
     )
   }
 }
@@ -124,7 +126,12 @@ export function useEditFilm<T>(
   filmId: number,
 ) {
   const setFilms = useSetRecoilState(normalizedFilms)
-  return (arg: T) => {
-    setFilms((films) => films && over(lenses.film(filmId), editor(arg), films))
-  }
+  return pipe(
+    editor,
+    over(lenses.film(filmId)) as unknown as (
+      fn: Editor<FilmData>,
+    ) => Editor<NormalizedFilms>,
+    whenTruthy as WhenTruthy<NormalizedFilms, null>,
+    setFilms,
+  )
 }
