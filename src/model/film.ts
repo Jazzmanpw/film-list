@@ -38,6 +38,7 @@ const film = new schema.Entity(
         typeof c === 'string' ? c : c.country,
       ),
       genres: rawFilm.genres.map((g) => (typeof g === 'string' ? g : g.genre)),
+      filmId: `${rawFilm.filmId}`,
     }),
   },
 )
@@ -45,8 +46,8 @@ const film = new schema.Entity(
 export type FilmData = typeof film extends schema.Entity<infer T>
   ? T & { seen?: boolean }
   : never
-export function normalizeFilms(rawFilms: RawFilm[]) {
-  return normalize<RawFilm[], { films: { [id: number]: FilmData } }, number[]>(
+export function normalizeFilms(rawFilms: (RawFilm | FilmData)[]) {
+  return normalize<RawFilm[], { films: { [id: string]: FilmData } }, string[]>(
     rawFilms,
     [film],
   )
@@ -55,7 +56,7 @@ export function normalizeFilms(rawFilms: RawFilm[]) {
 export type NormalizedFilms = ReturnType<typeof normalizeFilms>
 
 export const lenses = {
-  film: (filmId: number) =>
+  film: (filmId: string) =>
     lensPath<NormalizedFilms, FilmData>(['entities', 'films', filmId]),
   result: lensProp<NormalizedFilms, 'result'>('result'),
 }

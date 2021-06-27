@@ -1,9 +1,25 @@
 import { filter, identity, join, pipe } from 'ramda'
+import type { AtomEffect } from 'recoil'
 
 // noinspection JSUnusedGlobalSymbols
 export function log<T>(v: T) {
   console.log(v)
   return v
+}
+
+// noinspection JSUnusedGlobalSymbols
+export function logLabel(label: string) {
+  return <T>(v: T) => {
+    console.log(label, v)
+    return v
+  }
+}
+
+// noinspection JSUnusedGlobalSymbols
+export function createLoggingEffect<T>(label?: string): AtomEffect<T> {
+  return ({ onSet }) => {
+    onSet((next, prev) => console.log(label, next, prev))
+  }
 }
 
 export const joinTruthy = pipe(filter<unknown, 'array'>(Boolean), join(' '))

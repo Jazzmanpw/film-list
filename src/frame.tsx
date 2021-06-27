@@ -7,6 +7,7 @@ import {
 } from 'react-router-dom'
 import HomeContent from './home/content'
 import ListContent from './list/content'
+import UndoModal from './undo-modal'
 
 const pages = [
   { url: '/', title: 'Главная', exact: true },
@@ -44,6 +45,7 @@ export default function Frame() {
             <ListContent />
           </Route>
         </Switch>
+        <UndoModal />
       </main>
     </Router>
   )

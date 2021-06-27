@@ -2,6 +2,7 @@ import {
   __,
   always,
   append,
+  assoc,
   contains,
   dec,
   defaultTo,
@@ -10,7 +11,6 @@ import {
   filter,
   identity,
   map,
-  merge,
   min,
   not,
   over,
@@ -20,9 +20,11 @@ import {
   reduce,
   reject,
   set,
+  toString,
   unless,
   view,
 } from 'ramda'
+import { useRef } from 'react'
 import {
   atom,
   selector,
@@ -32,6 +34,7 @@ import {
 } from 'recoil'
 import Film, { FilmData, lenses, NormalizedFilms, Status } from '../model/film'
 import { createStorageEffect, storageKeys } from '../storage'
+import { useUndo } from '../undo-modal'
 import { Editor, ifTruthy, WhenTruthy, whenTruthy } from '../utils'
 
 export const normalizedFilms = atom({
@@ -66,72 +69,107 @@ export const films = selectorFamily<FilmData[], { status?: Status }>({
     },
 })
 
-const nextCustomIdSelector = selector<number>({
+const nextCustomIdSelector = selector<string>({
   key: 'nextCustomId',
   get({ get }) {
-    return pipe<number[] | undefined, number[], number, number>(
+    return pipe<
+      string[] | undefined,
+      string[],
+      number[],
+      number,
+      number,
+      string
+    >(
       defaultTo([]),
+      map(Number),
       reduce<number, number>(min, 0),
       dec,
+      toString,
     )(get(normalizedFilms)?.result)
   },
 })
 
-export function useAddFilm() {
-  const setFilms = useSetRecoilState(normalizedFilms)
-  return pipe(addFilm, setFilms)
-}
-
-export function useAddCustomFilm() {
-  const nextCustomId = useRecoilValue(nextCustomIdSelector)
-  const setFilms = useSetRecoilState(normalizedFilms)
-  return pipe(
-    merge({ filmId: nextCustomId }) as (
-      customFilm: ReturnType<typeof Film.createCustom>,
-    ) => FilmData,
-    addFilm,
-    setFilms,
+export function useAddFilm(): (film: FilmData) => void {
+  return useUndo(
+    'добавление фильма',
+    useAddFilmInternal(),
+    useRemoveFilmInternal(),
   )
 }
 
-function addFilm(film: FilmData) {
-  return ifTruthy<NormalizedFilms, null, NormalizedFilms | null>(
-    unless(
-      pipe(view(lenses.result), contains(film.filmId)),
-      pipe(
-        set(lenses.film(film.filmId), film),
-        over(lenses.result, append(film.filmId)),
-      ),
-    ),
-    always(Film.normalizeFilms([film])),
+export function useAddCustomFilm() {
+  return pipe<ReturnType<typeof Film.createCustom>, FilmData, void>(
+    assoc('filmId', useRecoilValue(nextCustomIdSelector)),
+    useAddFilm(),
   )
 }
 
 export function useRemoveFilm() {
+  return useUndo(
+    'удаление фильма',
+    useRemoveFilmInternal(),
+    useAddFilmInternal(),
+  )
+}
+
+export function useEditFilm<T>(
+  editor: (arg: T) => Editor<FilmData>,
+  filmId: string,
+) {
+  const editorMemoRef = useRef<FilmData | null>(null)
+  const memoizedEditor: typeof editor = (arg) => (film) => {
+    editorMemoRef.current = film
+    return editor(arg)(film)
+  }
+  return useUndo(
+    'редактирование фильма',
+    pipe(memoizedEditor, useReplaceFilmInternal(filmId)),
+    pipe(
+      always((film: FilmData) => editorMemoRef.current || film),
+      useReplaceFilmInternal(filmId),
+    ),
+  )
+}
+
+function useAddFilmInternal() {
   const setFilms = useSetRecoilState(normalizedFilms)
-  return (film: FilmData) => {
-    setFilms(
+  return pipe<FilmData, Editor<NormalizedFilms | null>, void>(
+    (film: FilmData) =>
+      ifTruthy<NormalizedFilms, null, NormalizedFilms | null>(
+        unless(
+          pipe(view(lenses.result), contains<string>(film.filmId)),
+          pipe(
+            set(lenses.film(film.filmId), film),
+            over(lenses.result, append(film.filmId)),
+          ),
+        ),
+        always(Film.normalizeFilms([film])),
+      ),
+    setFilms,
+  )
+}
+
+function useReplaceFilmInternal(filmId: string) {
+  const setFilms = useSetRecoilState(normalizedFilms)
+  return pipe(
+    over(lenses.film(filmId)) as unknown as (
+      fn: Editor<FilmData>,
+    ) => Editor<NormalizedFilms>,
+    whenTruthy as WhenTruthy<NormalizedFilms, null>,
+    setFilms,
+  )
+}
+
+function useRemoveFilmInternal() {
+  const setFilms = useSetRecoilState(normalizedFilms)
+  return pipe(
+    (film: FilmData) =>
       whenTruthy<NormalizedFilms, null>(
         pipe(
           dissocPath<NormalizedFilms>(['entities', 'films', film.filmId]),
           over(lenses.result, reject(equals(film.filmId))),
         ),
       ),
-    )
-  }
-}
-
-export function useEditFilm<T>(
-  editor: (arg: T) => (film: FilmData) => FilmData,
-  filmId: number,
-) {
-  const setFilms = useSetRecoilState(normalizedFilms)
-  return pipe(
-    editor,
-    over(lenses.film(filmId)) as unknown as (
-      fn: Editor<FilmData>,
-    ) => Editor<NormalizedFilms>,
-    whenTruthy as WhenTruthy<NormalizedFilms, null>,
     setFilms,
   )
 }
