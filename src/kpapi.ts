@@ -1,4 +1,22 @@
-import Film from './model/film'
+import type { FilmData } from './model/film'
+
+type KpApiFilm = {
+  filmId: number
+  nameRu: string
+  nameEn: string
+  type: string
+  year: string
+  description: string
+  filmLength: string
+  countries: ({ country: string } | string)[]
+  genres: ({ genre: string } | string)[]
+  rating: string
+  ratingVoteCount: number
+  posterUrl: string
+  posterUrlPreview: string
+}
+
+type KeywordResponseData = { films: KpApiFilm[] }
 
 const headers = new Headers({
   'X-API-KEY': localStorage.getItem('kpapi-token') as string,
@@ -14,12 +32,23 @@ export async function fetchFilmsByKeyword(
       `${baseUrl}/films/search-by-keyword?keyword=${keyword}`,
       { headers, signal },
     )
-    const data = await response.json()
-    return Film.normalizeFilms(data.films)
+    const data: KeywordResponseData = await response.json()
+    return data.films.map(normalize)
   } catch (err) {
     if (!err.message.includes('The user aborted a request')) {
       throw err
     }
   }
   return null
+}
+
+function normalize(film: KpApiFilm): FilmData {
+  return {
+    id: `kp-${film.filmId}`,
+    genres: film.genres.map((g) => (typeof g === 'string' ? g : g.genre)),
+    name: film.nameRu,
+    originalName: film.nameEn,
+    thumbnailUrl: film.posterUrlPreview,
+    href: `https://www.kinopoisk.ru/film/${film.filmId}/`,
+  }
 }

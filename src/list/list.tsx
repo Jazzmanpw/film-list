@@ -13,7 +13,7 @@ export default function List() {
     <div className="col-span-8 lg:overflow-y-auto 2xl:col-span-9">
       <ul className="grid gap-4 md:grid-cols-2 2xl:grid-cols-3">
         {films.map((film) => (
-          <ListItem film={film} key={film.filmId} />
+          <ListItem film={film} key={film.id} />
         ))}
       </ul>
     </div>

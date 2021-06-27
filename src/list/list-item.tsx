@@ -17,30 +17,33 @@ export default function ListItem({ film }: Props) {
   const remove = useRemoveFilm()
   const toggleSeen = useEditFilm<boolean>(
     always(over(lensProp('seen'), not)),
-    film.filmId,
+    film.id,
   )
 
   return (
     <li>
       <article
         className="group relative flex gap-4 lg:overflow-auto"
-        key={film.filmId}
+        key={film.id}
       >
         <img
           className="w-1/4 object-cover object-center sm:w-1/6 md:w-1/4 xl:w-1/6 2xl:w-1/4"
-          src={film.posterUrlPreview}
-          alt={joinTruthy([film.nameRu, film.nameEn && `(${film.nameEn})`])}
+          src={film.thumbnailUrl}
+          alt={joinTruthy([
+            film.name,
+            film.originalName && `(${film.originalName})`,
+          ])}
         />
         <div className="flex-1">
-          <h1 className="font-semibold pr-4">{film.nameRu}</h1>
-          <h2 className="text-gray-500">{film.nameEn}</h2>
+          <h1 className="font-semibold pr-4">{film.name}</h1>
+          <h2 className="text-gray-500">{film.originalName}</h2>
           <SwitchToggle
             label={getSeenLabel}
             checked={film.seen}
             onChange={toggleSeen}
             className="h-6"
-            id={`film-${film.filmId}`}
-            key={film.filmId}
+            id={`film-${film.id}`}
+            key={film.id}
           />
           <FontAwesomeIcon
             icon={faTimes}

@@ -2,7 +2,6 @@ import { normalize, schema } from 'normalizr'
 import { lensPath, lensProp } from 'ramda'
 
 export default {
-  createCustom,
   normalizeFilms,
 }
 
@@ -11,44 +10,23 @@ export enum Status {
   new = 'new',
 }
 
-type RawFilm = {
-  filmId: number
-  nameRu: string
-  nameEn: string
-  type: string
-  year: string
-  description: string
-  filmLength: string
-  countries: ({ country: string } | string)[]
-  genres: ({ genre: string } | string)[]
-  rating: string
-  ratingVoteCount: number
-  posterUrl: string
-  posterUrlPreview: string
+export type FilmData = {
+  genres: string[]
+  href?: string
+  id: string
+  name: string
+  originalName?: string
+  seen?: boolean
+  thumbnailUrl: string
 }
 
-const film = new schema.Entity(
-  'films',
-  {},
-  {
-    idAttribute: 'filmId',
-    processStrategy: (rawFilm: RawFilm) => ({
-      ...rawFilm,
-      countries: rawFilm.countries.map((c) =>
-        typeof c === 'string' ? c : c.country,
-      ),
-      genres: rawFilm.genres.map((g) => (typeof g === 'string' ? g : g.genre)),
-      filmId: `${rawFilm.filmId}`,
-    }),
-  },
-)
+export type CustomFilm = FilmData & { id?: string }
 
-export type FilmData = typeof film extends schema.Entity<infer T>
-  ? T & { seen?: boolean }
-  : never
-export function normalizeFilms(rawFilms: (RawFilm | FilmData)[]) {
-  return normalize<RawFilm[], { films: { [id: string]: FilmData } }, string[]>(
-    rawFilms,
+const film = new schema.Entity('films', {}, { idAttribute: 'id' })
+
+export function normalizeFilms(films: FilmData[]) {
+  return normalize<FilmData[], { films: { [id: string]: FilmData } }, string[]>(
+    films,
     [film],
   )
 }
@@ -59,20 +37,4 @@ export const lenses = {
   film: (filmId: string) =>
     lensPath<NormalizedFilms, FilmData>(['entities', 'films', filmId]),
   result: lensProp<NormalizedFilms, 'result'>('result'),
-}
-
-export type CustomFilm = Partial<FilmData> &
-  Pick<FilmData, 'nameRu' | 'nameEn' | 'posterUrl' | 'posterUrlPreview'>
-function createCustom(film: CustomFilm): Omit<FilmData, 'filmId'> {
-  return {
-    type: '',
-    year: '',
-    description: '',
-    filmLength: '',
-    countries: [],
-    genres: [],
-    rating: '',
-    ratingVoteCount: 0,
-    ...film,
-  }
 }

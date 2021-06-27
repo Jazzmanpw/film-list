@@ -1,10 +1,11 @@
-import { path, pipe } from 'ramda'
+import { always, path, pipe } from 'ramda'
 import React, { ChangeEvent, useEffect, useRef, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import ExternalLink from '../external-link'
 import { fetchFilmsByKeyword } from '../kpapi'
-import type { NormalizedFilms } from '../model/film'
-import { Status } from '../model/film'
+import type { FilmData, NormalizedFilms } from '../model/film'
+import Film, { Status } from '../model/film'
+import { ifTruthy } from '../utils'
 import { useAddFilm } from './atoms'
 import CustomFilmButton from './custom-film-button'
 
@@ -39,14 +40,11 @@ const FilmInput: React.FC = () => {
                   addFilm({ ...film, seen: status === Status.seen })
                 }
               >
-                <span className="font-semibold">{film.nameRu} </span>
-                {film.nameEn ? (
-                  <span className="text-gray-500">{film.nameEn}</span>
+                <span className="font-semibold">{film.name}</span>
+                {film.originalName ? (
+                  <span className="text-gray-500"> {film.originalName}</span>
                 ) : null}
-                <ExternalLink
-                  href={`https://www.kinopoisk.ru/film/${film.filmId}/`}
-                  target="_blank"
-                />
+                <ExternalLink href={film.href} target="_blank" />
               </li>
             )
           })}
@@ -71,7 +69,10 @@ function useFetchedFilms(value: string) {
       abortControllerRef.current = new AbortController()
       if (value) {
         fetchFilmsByKeyword(value, abortControllerRef.current.signal).then(
-          setFilms,
+          ifTruthy<FilmData[], null, void>(
+            pipe(Film.normalizeFilms, setFilms),
+            always(undefined),
+          ),
         )
       } else {
         setFilms(null)

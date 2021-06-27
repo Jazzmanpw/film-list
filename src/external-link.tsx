@@ -1,12 +1,12 @@
 import React from 'react'
 
 type Props = {
-  href: string
+  href?: string
   target?: '_blank'
 }
 
 export default function ExternalLink({ href, target }: Props) {
-  return (
+  return href ? (
     <a
       className="inline-block h-4 ml-1 align-middle"
       href={href}
@@ -26,5 +26,5 @@ export default function ExternalLink({ href, target }: Props) {
       </svg>
       {/* no content for now, just the icon */}
     </a>
-  )
+  ) : null
 }

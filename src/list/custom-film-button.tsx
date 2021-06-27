@@ -1,16 +1,18 @@
-import { pipe } from 'ramda'
 import React from 'react'
-import { useForm, SubmitHandler } from 'react-hook-form'
+import { useForm } from 'react-hook-form'
 import Popup from 'reactjs-popup'
+import type { CustomFilm } from '../model/film'
 import { useAddCustomFilm } from './atoms'
-import Film, { CustomFilm } from '../model/film'
 
 const customFilmAttributes = [
-  { key: 'nameRu' as const, text: 'Русское название', required: true },
-  { key: 'nameEn' as const, text: 'Оригинальное название', required: true },
-  { key: 'posterUrl' as const, text: 'Ссылка на постер', required: true },
+  { key: 'name' as const, text: 'Русское название', required: true },
   {
-    key: 'posterUrlPreview' as const,
+    key: 'originalName' as const,
+    text: 'Оригинальное название',
+    required: true,
+  },
+  {
+    key: 'thumbnailUrl' as const,
     text: 'Ссылка на маленькую версию постера',
     required: true,
   },
@@ -19,11 +21,6 @@ const customFilmAttributes = [
 export default function CustomFilmButton() {
   const { handleSubmit, register, reset } = useForm<CustomFilm>()
   const addCustomFilm = useAddCustomFilm()
-
-  const onSubmit: SubmitHandler<CustomFilm> = pipe(
-    Film.createCustom,
-    addCustomFilm,
-  )
 
   return (
     <Popup
@@ -37,7 +34,7 @@ export default function CustomFilmButton() {
           className="grid sm:p-2 sm:grid-cols-popup-content"
           key="form"
           onSubmit={(e) => {
-            handleSubmit(onSubmit)(e)
+            handleSubmit(addCustomFilm)(e)
             close()
           }}
         >

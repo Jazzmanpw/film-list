@@ -3,15 +3,17 @@ import {
   always,
   append,
   assoc,
+  concat,
   contains,
-  dec,
   defaultTo,
   dissocPath,
+  drop,
   equals,
   filter,
   identity,
+  inc,
   map,
-  min,
+  max,
   not,
   over,
   pipe,
@@ -20,6 +22,7 @@ import {
   reduce,
   reject,
   set,
+  startsWith,
   toString,
   unless,
   view,
@@ -32,7 +35,13 @@ import {
   useRecoilValue,
   useSetRecoilState,
 } from 'recoil'
-import Film, { FilmData, lenses, NormalizedFilms, Status } from '../model/film'
+import Film, {
+  CustomFilm,
+  FilmData,
+  lenses,
+  NormalizedFilms,
+  Status,
+} from '../model/film'
 import { createStorageEffect, storageKeys } from '../storage'
 import { useUndo } from '../undo-modal'
 import { Editor, ifTruthy, WhenTruthy, whenTruthy } from '../utils'
@@ -40,7 +49,7 @@ import { Editor, ifTruthy, WhenTruthy, whenTruthy } from '../utils'
 export const normalizedFilms = atom({
   default: null as NormalizedFilms | null,
   key: 'normalizedFilms',
-  effects_UNSTABLE: [createStorageEffect(storageKeys.films, 0)],
+  effects_UNSTABLE: [createStorageEffect(storageKeys.films, 1)],
 })
 
 export const films = selectorFamily<FilmData[], { status?: Status }>({
@@ -69,27 +78,32 @@ export const films = selectorFamily<FilmData[], { status?: Status }>({
     },
 })
 
+const customPrefix = 'custom-'
 const nextCustomIdSelector = selector<string>({
   key: 'nextCustomId',
   get({ get }) {
     return pipe<
       string[] | undefined,
       string[],
+      string[],
       number[],
       number,
       number,
+      string,
       string
     >(
       defaultTo([]),
-      map(Number),
-      reduce<number, number>(min, 0),
-      dec,
+      filter(startsWith(customPrefix)),
+      map(pipe<string, string, number>(drop(customPrefix.length), Number)),
+      reduce<number, number>(max, 0),
+      inc,
       toString,
+      concat(customPrefix),
     )(get(normalizedFilms)?.result)
   },
 })
 
-export function useAddFilm(): (film: FilmData) => void {
+export function useAddFilm() {
   return useUndo(
     'добавление фильма',
     useAddFilmInternal(),
@@ -98,8 +112,8 @@ export function useAddFilm(): (film: FilmData) => void {
 }
 
 export function useAddCustomFilm() {
-  return pipe<ReturnType<typeof Film.createCustom>, FilmData, void>(
-    assoc('filmId', useRecoilValue(nextCustomIdSelector)),
+  return pipe<CustomFilm, FilmData, void>(
+    assoc('id', useRecoilValue(nextCustomIdSelector)),
     useAddFilm(),
   )
 }
@@ -137,10 +151,10 @@ function useAddFilmInternal() {
     (film: FilmData) =>
       ifTruthy<NormalizedFilms, null, NormalizedFilms | null>(
         unless(
-          pipe(view(lenses.result), contains<string>(film.filmId)),
+          pipe(view(lenses.result), contains<string>(film.id)),
           pipe(
-            set(lenses.film(film.filmId), film),
-            over(lenses.result, append(film.filmId)),
+            set(lenses.film(film.id), film),
+            over(lenses.result, append(film.id)),
           ),
         ),
         always(Film.normalizeFilms([film])),
@@ -166,8 +180,8 @@ function useRemoveFilmInternal() {
     (film: FilmData) =>
       whenTruthy<NormalizedFilms, null>(
         pipe(
-          dissocPath<NormalizedFilms>(['entities', 'films', film.filmId]),
-          over(lenses.result, reject(equals(film.filmId))),
+          dissocPath<NormalizedFilms>(['entities', 'films', film.id]),
+          over(lenses.result, reject(equals(film.id))),
         ),
       ),
     setFilms,
