@@ -17,6 +17,7 @@ export default function SwitchToggle({
   onChange,
 }: Props) {
   const onChangeInternal = (e: ChangeEvent<HTMLInputElement>) => {
+    e.stopPropagation()
     onChange(e.target.checked)
   }
 
@@ -24,7 +25,7 @@ export default function SwitchToggle({
     <label
       htmlFor={id}
       className={`${joinTruthy([
-        'flex items-center cursor-pointer',
+        'flex items-center cursor-pointer w-max',
         className,
       ])}`}
     >

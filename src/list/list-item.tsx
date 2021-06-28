@@ -22,35 +22,36 @@ export default function ListItem({ film }: Props) {
 
   return (
     <li>
-      <Link to={`/film/${film.id}`}>
-        <article
-          className="group relative flex gap-4 lg:overflow-auto"
-          key={film.id}
-        >
-          <img
-            className="w-1/4 object-cover object-center sm:w-1/6 md:w-1/4 xl:w-1/6 2xl:w-1/4"
-            src={film.thumbnailUrl}
-            alt={Film.toString(film)}
+      <article
+        className="group relative flex gap-4 lg:overflow-auto"
+        key={film.id}
+      >
+        <img
+          className="w-1/4 object-cover object-center sm:w-1/6 md:w-1/4 xl:w-1/6 2xl:w-1/4"
+          src={film.thumbnailUrl}
+          alt={Film.toString(film)}
+        />
+        <div className="flex-1">
+          <h1 className="font-semibold pr-4">{film.name}</h1>
+          <h2 className="text-gray-500">{film.originalName}</h2>
+          <SwitchToggle
+            label={getSeenLabel}
+            checked={film.seen}
+            onChange={toggleSeen}
+            className="h-6"
+            id={`film-${film.id}`}
+            key={film.id}
           />
-          <div className="flex-1">
-            <h1 className="font-semibold pr-4">{film.name}</h1>
-            <h2 className="text-gray-500">{film.originalName}</h2>
-            <SwitchToggle
-              label={getSeenLabel}
-              checked={film.seen}
-              onChange={toggleSeen}
-              className="h-6"
-              id={`film-${film.id}`}
-              key={film.id}
-            />
-            <FontAwesomeIcon
-              icon={faTimes}
-              className="absolute top-1 right-1 cursor-pointer hover:text-red-600 lg:text-red-500 lg:opacity-0 lg:group-hover:opacity-100"
-              onClick={() => remove(film)}
-            />
-          </div>
-        </article>
-      </Link>
+          <Link to={`/film/${film.id}`} className="text-red-500 underline">
+            Подробнее
+          </Link>
+          <FontAwesomeIcon
+            icon={faTimes}
+            className="absolute top-1 right-1 cursor-pointer hover:text-red-600 lg:text-red-500 lg:opacity-0 lg:group-hover:opacity-100"
+            onClick={() => remove(film)}
+          />
+        </div>
+      </article>
     </li>
   )
 }
