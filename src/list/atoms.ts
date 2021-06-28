@@ -30,6 +30,7 @@ import {
 import { useRef } from 'react'
 import {
   atom,
+  GetRecoilValue,
   selector,
   selectorFamily,
   useRecoilValue,
@@ -38,7 +39,6 @@ import {
 import Film, {
   CustomFilm,
   FilmData,
-  lenses,
   NormalizedFilms,
   Status,
 } from '../film/model'
@@ -63,7 +63,7 @@ export const films = selectorFamily<FilmData[], { status?: Status }>({
       }
 
       const process = pipe(
-        prop('result') as (films: typeof normFilms) => number[],
+        prop('result') as (films: NormalizedFilms) => number[],
         map(prop(__, normFilms.entities.films)),
         status
           ? filter<FilmData, 'array'>(
@@ -151,10 +151,10 @@ function useAddFilmInternal() {
     (film: FilmData) =>
       ifTruthy<NormalizedFilms, null, NormalizedFilms | null>(
         unless(
-          pipe(view(lenses.result), contains<string>(film.id)),
+          pipe(view(Film.lenses.result), contains<string>(film.id)),
           pipe(
-            set(lenses.film(film.id), film),
-            over(lenses.result, append(film.id)),
+            set(Film.lenses.film(film.id), film),
+            over(Film.lenses.result, append(film.id)),
           ),
         ),
         always(Film.normalizeFilms([film])),
@@ -166,7 +166,7 @@ function useAddFilmInternal() {
 function useReplaceFilmInternal(filmId: string) {
   const setFilms = useSetRecoilState(normalizedFilms)
   return pipe(
-    over(lenses.film(filmId)) as unknown as (
+    over(Film.lenses.film(filmId)) as unknown as (
       fn: Editor<FilmData>,
     ) => Editor<NormalizedFilms>,
     whenTruthy as WhenTruthy<NormalizedFilms, null>,
@@ -181,7 +181,7 @@ function useRemoveFilmInternal() {
       whenTruthy<NormalizedFilms, null>(
         pipe(
           dissocPath<NormalizedFilms>(['entities', 'films', film.id]),
-          over(lenses.result, reject(equals(film.id))),
+          over(Film.lenses.result, reject(equals(film.id))),
         ),
       ),
     setFilms,
