@@ -1,4 +1,5 @@
 import { always, filter, identity, join, pipe } from 'ramda'
+import { useEffect, useRef, useState } from 'react'
 import type { AtomEffect } from 'recoil'
 
 // noinspection JSUnusedGlobalSymbols
@@ -60,4 +61,19 @@ export async function tryFetch<T>(
     }
   }
   return null
+}
+
+export function useFetchOne<T>(
+  fetchData: (signal: AbortSignal) => Promise<T | null>,
+) {
+  const abortControllerRef = useRef<AbortController>()
+  const [data, setData] = useState<T | null>(null)
+
+  useEffect(() => {
+    abortControllerRef.current?.abort()
+    abortControllerRef.current = new AbortController()
+    fetchData(abortControllerRef.current.signal).then(setData)
+  }, [fetchData])
+
+  return data
 }

@@ -27,20 +27,17 @@ const baseUrl = 'https://kinopoiskapiunofficial.tech/api/v2.1'
 
 const idPrefix = 'kp-'
 
-export async function fetchFilmsByKeyword(
-  keyword: string,
-  signal: AbortSignal,
-) {
-  return whenTruthyOr<KeywordResponseData, null, FilmData[], null>(
-    pipe(prop('films'), map(normalize)),
-    null,
-  )(
-    await tryFetch<KeywordResponseData>(
-      `${baseUrl}/films/search-by-keyword?keyword=${keyword}`,
-      { headers, signal },
-    ),
-  )
-}
+export const fetchFilmsByKeyword =
+  (keyword: string) => async (signal: AbortSignal) =>
+    whenTruthyOr<KeywordResponseData, null, FilmData[], null>(
+      pipe(prop('films'), map(normalize)),
+      null,
+    )(
+      await tryFetch<KeywordResponseData>(
+        `${baseUrl}/films/search-by-keyword?keyword=${keyword}`,
+        { headers, signal },
+      ),
+    )
 
 function normalize(film: KpApiFilm): FilmData {
   return {

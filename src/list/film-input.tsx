@@ -1,11 +1,11 @@
-import { path, pipe } from 'ramda'
-import React, { ChangeEvent, useEffect, useRef, useState } from 'react'
+import { always, andThen, ifElse, path, pipe } from 'ramda'
+import React, { ChangeEvent, useMemo, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { useDebouncedCallback } from 'use-debounce'
 import ExternalLink from '../external-link'
 import Film, { FilmData, NormalizedFilms, Status } from '../film/model'
 import { fetchFilmsByKeyword } from '../kpapi'
-import { whenTruthyOr } from '../utils'
+import { useFetchOne, whenTruthyOr } from '../utils'
 import { useAddFilm } from './atoms'
 import CustomFilmButton from './custom-film-button'
 
@@ -66,26 +66,23 @@ const FilmInput: React.FC = () => {
 export default FilmInput
 
 function useFetchedFilms(value: string) {
-  const abortControllerRef = useRef<AbortController>()
-  const [films, setFilms] = useState<NormalizedFilms | null>(null)
-
-  useEffect(
-    function fetchFilms() {
-      abortControllerRef.current?.abort()
-      abortControllerRef.current = new AbortController()
-      if (value) {
-        fetchFilmsByKeyword(value, abortControllerRef.current.signal).then(
-          whenTruthyOr<FilmData[], null, void, void>(
-            pipe(Film.normalizeFilms, setFilms),
-            undefined,
+  return useFetchOne<NormalizedFilms>(
+    useMemo(
+      () =>
+        ifElse(
+          always(!!value),
+          pipe(
+            fetchFilmsByKeyword(value),
+            andThen(
+              whenTruthyOr<FilmData[], null, NormalizedFilms, null>(
+                Film.normalizeFilms,
+                null,
+              ),
+            ),
           ),
-        )
-      } else {
-        setFilms(null)
-      }
-    },
-    [value],
+          always(Promise.resolve(null)),
+        ),
+      [value],
+    ),
   )
-
-  return films
 }
