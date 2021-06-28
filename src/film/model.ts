@@ -1,5 +1,6 @@
 import { normalize, schema } from 'normalizr'
 import { lensPath, lensProp } from 'ramda'
+import { joinTruthy } from '../utils'
 
 const lenses = {
   film: (filmId: string) =>
@@ -10,6 +11,8 @@ const lenses = {
 export default {
   lenses,
   normalizeFilms,
+  toString: (film: FilmData) =>
+    joinTruthy([film.name, film.originalName && `(${film.originalName})`]),
 }
 
 export enum Status {

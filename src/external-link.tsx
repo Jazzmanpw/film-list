@@ -1,19 +1,25 @@
 import React from 'react'
 
+const sizeClasses = {
+  sm: { a: 'h-4 ml-1', svg: 'w-3 h-3' },
+  md: { a: 'h-8 ml-2', svg: 'w-6 h-6' },
+}
+
 type Props = {
   href?: string
+  size: keyof typeof sizeClasses
   target?: '_blank'
 }
 
-export default function ExternalLink({ href, target }: Props) {
+export default function ExternalLink({ href, size, target }: Props) {
   return href ? (
     <a
-      className="inline-block h-4 ml-1 align-middle"
+      className={`inline-block ${sizeClasses[size].a} align-middle`}
       href={href}
       target={target}
     >
       <svg
-        className="text-red-500 inline w-3 h-3 align-top hover:text-red-600"
+        className={`text-red-500 inline ${sizeClasses[size].svg} align-top hover:text-red-600`}
         viewBox="0 0 1024 768"
         height="1024"
         width="768"

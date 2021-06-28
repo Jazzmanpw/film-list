@@ -5,6 +5,7 @@ import {
   Route,
   Switch,
 } from 'react-router-dom'
+import FilmContent from './film/film-content'
 import HomeContent from './home/content'
 import ListContent from './list/content'
 import UndoModal from './undo-modal'
@@ -43,6 +44,9 @@ export default function Frame() {
           </Route>
           <Route path="/list">
             <ListContent />
+          </Route>
+          <Route path="/film/:id">
+            <FilmContent />
           </Route>
         </Switch>
         <UndoModal />

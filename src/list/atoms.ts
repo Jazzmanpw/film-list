@@ -2,6 +2,7 @@ import {
   __,
   always,
   append,
+  applyTo,
   assoc,
   concat,
   contains,
@@ -16,6 +17,7 @@ import {
   max,
   not,
   over,
+  path,
   pipe,
   prop,
   propSatisfies,
@@ -76,6 +78,26 @@ export const films = selectorFamily<FilmData[], { status?: Status }>({
       )
       return process(normFilms)
     },
+})
+
+export const film = selectorFamily<FilmData | undefined, string>({
+  key: 'film',
+  get: (id) =>
+    pipe<
+      { get: GetRecoilValue },
+      GetRecoilValue,
+      NormalizedFilms | null,
+      FilmData | undefined
+    >(
+      prop('get'),
+      applyTo(normalizedFilms) as (
+        fn: GetRecoilValue,
+      ) => NormalizedFilms | null,
+      ifTruthy<NormalizedFilms, null, FilmData | undefined>(
+        path<FilmData>(['entities', 'films', id]),
+        always(undefined),
+      ),
+    ),
 })
 
 const customPrefix = 'custom-'

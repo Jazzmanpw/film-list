@@ -50,7 +50,7 @@ const FilmInput: React.FC = () => {
                 {film.originalName ? (
                   <span className="text-gray-500"> {film.originalName}</span>
                 ) : null}
-                <ExternalLink href={film.href} target="_blank" />
+                <ExternalLink href={film.href} size="sm" target="_blank" />
               </li>
             )
           })}
