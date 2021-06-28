@@ -1,6 +1,7 @@
 import { always, path, pipe } from 'ramda'
 import React, { ChangeEvent, useEffect, useRef, useState } from 'react'
 import { useParams } from 'react-router-dom'
+import { useDebouncedCallback } from 'use-debounce'
 import ExternalLink from '../external-link'
 import { fetchFilmsByKeyword } from '../kpapi'
 import type { FilmData, NormalizedFilms } from '../model/film'
@@ -15,13 +16,19 @@ const FilmInput: React.FC = () => {
   const suggestedFilms = useFetchedFilms(keyword)
   const { status } = useParams<{ status?: Status }>()
 
-  const onChange: React.ChangeEventHandler<HTMLInputElement> = pipe(
-    path(['target', 'value']) as (e: ChangeEvent<HTMLInputElement>) => string,
-    setValue,
-  )
+  const onChange: React.ChangeEventHandler<HTMLInputElement> =
+    useDebouncedCallback(
+      pipe(
+        path(['target', 'value']) as (
+          e: ChangeEvent<HTMLInputElement>,
+        ) => string,
+        setValue,
+      ),
+      300,
+    )
 
   return (
-    <div className="col-span-4 col-start-1 row-span-full 2xl:col-span-3 lg:overflow-y-auto">
+    <form className="col-span-4 col-start-1 row-span-full 2xl:col-span-3 lg:overflow-y-auto">
       <input
         className="input lg:sticky lg:top-0"
         type="text"
@@ -53,7 +60,7 @@ const FilmInput: React.FC = () => {
           </li>
         </ul>
       ) : null}
-    </div>
+    </form>
   )
 }
 

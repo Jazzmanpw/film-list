@@ -25,7 +25,11 @@ export default function CustomFilmButton() {
   return (
     <Popup
       modal
-      trigger={<button className="btn">Не нашли фильм?</button>}
+      trigger={
+        <button className="btn" type="button">
+          Не нашли фильм?
+        </button>
+      }
       className="custom-film"
       onClose={reset}
     >
