@@ -1,7 +1,7 @@
 import React from 'react'
 import { useForm } from 'react-hook-form'
 import Popup from 'reactjs-popup'
-import type { CustomFilm } from '../model/film'
+import type { CustomFilm } from '../film/model'
 import { useAddCustomFilm } from './atoms'
 
 const customFilmAttributes = [

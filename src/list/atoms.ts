@@ -41,7 +41,7 @@ import Film, {
   lenses,
   NormalizedFilms,
   Status,
-} from '../model/film'
+} from '../film/model'
 import { createStorageEffect, storageKeys } from '../storage'
 import { useUndo } from '../undo-modal'
 import { Editor, ifTruthy, WhenTruthy, whenTruthy } from '../utils'

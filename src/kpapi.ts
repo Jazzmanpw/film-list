@@ -1,4 +1,4 @@
-import type { FilmData } from './model/film'
+import type { FilmData } from './film/model'
 
 type KpApiFilm = {
   filmId: number
