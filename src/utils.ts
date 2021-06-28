@@ -1,4 +1,4 @@
-import { filter, identity, join, pipe } from 'ramda'
+import { always, filter, identity, join, pipe } from 'ramda'
 import type { AtomEffect } from 'recoil'
 
 // noinspection JSUnusedGlobalSymbols
@@ -26,13 +26,18 @@ export const joinTruthy = pipe(filter<unknown, 'array'>(Boolean), join(' '))
 
 type Falsy = '' | 0 | 0n | false | null | undefined
 
-export const ifTruthy =
+const ifTruthy =
   <T, N extends Falsy, R>(onTrue: (v: T) => R, onFalse: (v: N) => R) =>
   (v: T | N): R =>
     ifGuard<T, N>(v) ? onTrue(v) : onFalse(v)
 
 export const whenTruthy = <T, N extends Falsy>(onTrue: Editor<T>) =>
   ifTruthy<T, N, T | N>(onTrue, identity)
+
+export const whenTruthyOr = <T, N extends Falsy, R, D>(
+  onTrue: (v: T) => R | D,
+  defaultValue: D,
+) => ifTruthy<T, N, R | D>(onTrue, always(defaultValue))
 
 function ifGuard<T, N extends Falsy>(v: T | N): v is T {
   return !!v
@@ -41,3 +46,18 @@ function ifGuard<T, N extends Falsy>(v: T | N): v is T {
 export type Editor<T> = (v: T) => T
 
 export type WhenTruthy<T, N> = (onTrue: Editor<T>) => Editor<T | N>
+
+export async function tryFetch<T>(
+  request: RequestInfo,
+  init?: RequestInit,
+): Promise<T | null> {
+  try {
+    const response = await fetch(request, init)
+    return await response.json()
+  } catch (err) {
+    if (!err.message.includes('The user aborted a request')) {
+      throw err
+    }
+  }
+  return null
+}

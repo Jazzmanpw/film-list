@@ -1,11 +1,11 @@
-import { always, path, pipe } from 'ramda'
+import { path, pipe } from 'ramda'
 import React, { ChangeEvent, useEffect, useRef, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { useDebouncedCallback } from 'use-debounce'
 import ExternalLink from '../external-link'
 import Film, { FilmData, NormalizedFilms, Status } from '../film/model'
 import { fetchFilmsByKeyword } from '../kpapi'
-import { ifTruthy } from '../utils'
+import { whenTruthyOr } from '../utils'
 import { useAddFilm } from './atoms'
 import CustomFilmButton from './custom-film-button'
 
@@ -75,9 +75,9 @@ function useFetchedFilms(value: string) {
       abortControllerRef.current = new AbortController()
       if (value) {
         fetchFilmsByKeyword(value, abortControllerRef.current.signal).then(
-          ifTruthy<FilmData[], null, void>(
+          whenTruthyOr<FilmData[], null, void, void>(
             pipe(Film.normalizeFilms, setFilms),
-            always(undefined),
+            undefined,
           ),
         )
       } else {

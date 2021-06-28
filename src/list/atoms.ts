@@ -46,7 +46,7 @@ import Film, {
 } from '../film/model'
 import { createStorageEffect, storageKeys } from '../storage'
 import { useUndo } from '../undo-modal'
-import { Editor, ifTruthy, WhenTruthy, whenTruthy } from '../utils'
+import { Editor, WhenTruthy, whenTruthy, whenTruthyOr } from '../utils'
 
 export const normalizedFilms = atom({
   default: null as NormalizedFilms | null,
@@ -93,9 +93,9 @@ export const film = selectorFamily<FilmData | undefined, string>({
       applyTo(normalizedFilms) as (
         fn: GetRecoilValue,
       ) => NormalizedFilms | null,
-      ifTruthy<NormalizedFilms, null, FilmData | undefined>(
+      whenTruthyOr<NormalizedFilms, null, FilmData, undefined>(
         path<FilmData>(['entities', 'films', id]),
-        always(undefined),
+        undefined,
       ),
     ),
 })
@@ -171,7 +171,7 @@ function useAddFilmInternal() {
   const setFilms = useSetRecoilState(normalizedFilms)
   return pipe<FilmData, Editor<NormalizedFilms | null>, void>(
     (film: FilmData) =>
-      ifTruthy<NormalizedFilms, null, NormalizedFilms | null>(
+      whenTruthyOr<NormalizedFilms, null, NormalizedFilms, NormalizedFilms>(
         unless(
           pipe(view(Film.lenses.result), contains<string>(film.id)),
           pipe(
@@ -179,7 +179,7 @@ function useAddFilmInternal() {
             over(Film.lenses.result, append(film.id)),
           ),
         ),
-        always(Film.normalizeFilms([film])),
+        Film.normalizeFilms([film]),
       ),
     setFilms,
   )

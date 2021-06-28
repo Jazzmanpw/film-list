@@ -1,4 +1,6 @@
+import { map, pipe, prop } from 'ramda'
 import type { FilmData } from './film/model'
+import { tryFetch, whenTruthyOr } from './utils'
 
 type KpApiFilm = {
   filmId: number
@@ -23,28 +25,26 @@ const headers = new Headers({
 })
 const baseUrl = 'https://kinopoiskapiunofficial.tech/api/v2.1'
 
+const idPrefix = 'kp-'
+
 export async function fetchFilmsByKeyword(
   keyword: string,
   signal: AbortSignal,
 ) {
-  try {
-    const response = await fetch(
+  return whenTruthyOr<KeywordResponseData, null, FilmData[], null>(
+    pipe(prop('films'), map(normalize)),
+    null,
+  )(
+    await tryFetch<KeywordResponseData>(
       `${baseUrl}/films/search-by-keyword?keyword=${keyword}`,
       { headers, signal },
-    )
-    const data: KeywordResponseData = await response.json()
-    return data.films.map(normalize)
-  } catch (err) {
-    if (!err.message.includes('The user aborted a request')) {
-      throw err
-    }
-  }
-  return null
+    ),
+  )
 }
 
 function normalize(film: KpApiFilm): FilmData {
   return {
-    id: `kp-${film.filmId}`,
+    id: `${idPrefix}${film.filmId}`,
     genres: film.genres.map((g) => (typeof g === 'string' ? g : g.genre)),
     name: film.nameRu,
     originalName: film.nameEn,
