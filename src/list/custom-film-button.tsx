@@ -42,6 +42,7 @@ export default function CustomFilmButton() {
             close()
           }}
         >
+          <input {...register('source', { value: 'custom' })} type="hidden" />
           <h1 className="font-medium text-2xl" key="title">
             Введите данные о фильме
           </h1>

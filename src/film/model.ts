@@ -21,13 +21,16 @@ export enum Status {
 }
 
 export type FilmData = {
-  genres: string[]
+  countries?: string[]
+  genres?: string[]
   href?: string
   id: string
   name: string
   originalName?: string
   seen?: boolean
+  source: 'kp' | 'custom'
   thumbnailUrl: string
+  year?: string
 }
 
 export type CustomFilm = FilmData & { id?: string }

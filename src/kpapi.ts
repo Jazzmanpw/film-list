@@ -1,4 +1,16 @@
-import { map, pipe, prop } from 'ramda'
+import {
+  always,
+  applySpec,
+  concat,
+  equals,
+  identity,
+  ifElse,
+  map,
+  pipe,
+  prop,
+  toString,
+  type,
+} from 'ramda'
 import type { FilmData } from './film/model'
 import { tryFetch, whenTruthyOr } from './utils'
 
@@ -39,13 +51,24 @@ export const fetchFilmsByKeyword =
       ),
     )
 
-function normalize(film: KpApiFilm): FilmData {
-  return {
-    id: `${idPrefix}${film.filmId}`,
-    genres: film.genres.map((g) => (typeof g === 'string' ? g : g.genre)),
-    name: film.nameRu,
-    originalName: film.nameEn,
-    thumbnailUrl: film.posterUrlPreview,
-    href: `https://www.kinopoisk.ru/film/${film.filmId}/`,
-  }
-}
+const normalize = applySpec({
+  countries: pipe<KpApiFilm, KpApiFilm['countries'], string[]>(
+    prop('countries'),
+    map(ifElse(pipe(type, equals('String')), identity, prop('country'))),
+  ),
+  genres: pipe<KpApiFilm, KpApiFilm['genres'], string[]>(
+    prop('genres'),
+    map(ifElse(pipe(type, equals('String')), identity, prop('genre'))),
+  ),
+  href: (film: KpApiFilm) => `https://www.kinopoisk.ru/film/${film.filmId}/`,
+  id: pipe<KpApiFilm, number, string, string>(
+    prop('filmId'),
+    toString,
+    concat(idPrefix),
+  ),
+  name: prop('nameRu'),
+  originalName: prop('nameEn'),
+  source: always('kp'),
+  thumbnailUrl: prop('posterUrlPreview'),
+  year: prop('year'),
+}) as (film: KpApiFilm) => FilmData

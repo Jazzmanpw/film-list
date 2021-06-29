@@ -16,6 +16,21 @@ export default function FilmContent() {
       </h1>
       <h2 className="text-l text-gray-500">{film.originalName}</h2>
       <img src={film.thumbnailUrl} alt={Film.toString(film)} />
+      {film.year ? (
+        <p>
+          <b className="font-bold">Год:</b> {film.year}
+        </p>
+      ) : null}
+      {film.countries?.length ? (
+        <p>
+          <b className="font-bold">Страны:</b> {film.countries.join(', ')}
+        </p>
+      ) : null}
+      {film.genres?.length ? (
+        <p>
+          <b className="font-bold">Жанры:</b> {film.genres.join(', ')}
+        </p>
+      ) : null}
     </article>
   ) : null
 }
