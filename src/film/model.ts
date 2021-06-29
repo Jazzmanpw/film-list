@@ -33,7 +33,7 @@ export type FilmData = {
   year?: string
 }
 
-export type CustomFilm = FilmData & { id?: string }
+export type CustomFilm = Omit<FilmData, 'id'>
 
 const film = new schema.Entity('films', {}, { idAttribute: 'id' })
 

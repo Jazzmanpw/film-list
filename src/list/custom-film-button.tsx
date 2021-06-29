@@ -1,25 +1,17 @@
+import { Field, Form, Formik } from 'formik'
+import { pipe } from 'ramda'
 import React from 'react'
-import { useForm } from 'react-hook-form'
 import Popup from 'reactjs-popup'
 import type { CustomFilm } from '../film/model'
 import { useAddCustomFilm } from './atoms'
 
-const customFilmAttributes = [
-  { key: 'name' as const, text: 'Русское название', required: true },
-  {
-    key: 'originalName' as const,
-    text: 'Оригинальное название',
-    required: true,
-  },
-  {
-    key: 'thumbnailUrl' as const,
-    text: 'Ссылка на маленькую версию постера',
-    required: true,
-  },
-]
+const attrs = {
+  name: 'Русское название',
+  originalName: 'Оригинальное название',
+  thumbnailUrl: 'Ссылка на маленькую версию постера',
+}
 
 export default function CustomFilmButton() {
-  const { handleSubmit, register, reset } = useForm<CustomFilm>()
   const addCustomFilm = useAddCustomFilm()
 
   return (
@@ -31,43 +23,48 @@ export default function CustomFilmButton() {
         </button>
       }
       className="custom-film"
-      onClose={reset}
     >
       {(close: () => void) => (
-        <form
-          className="grid sm:p-2 sm:grid-cols-popup-content"
-          key="form"
-          onSubmit={(e) => {
-            handleSubmit(addCustomFilm)(e)
-            close()
+        <Formik<CustomFilm>
+          initialValues={{
+            source: 'custom',
+            name: '',
+            originalName: '',
+            thumbnailUrl: '',
+            seen: false,
           }}
+          onSubmit={pipe(addCustomFilm, close)}
         >
-          <input {...register('source', { value: 'custom' })} type="hidden" />
-          <h1 className="font-medium text-2xl" key="title">
-            Введите данные о фильме
-          </h1>
-          <ul className="sm:col-span-2 sm:row-start-2">
-            {customFilmAttributes.map(({ key, text, required }) => (
-              <li key={key}>
-                <label htmlFor={key}>{text}</label>
-                <input
-                  className="input"
-                  type="text"
-                  required
-                  {...register(key, { required })}
-                  autoComplete="off"
-                  key={`${key}-input`}
-                />
+          <Form className="grid sm:p-2 sm:grid-cols-popup-content">
+            <h1 className="font-medium text-2xl" key="title">
+              Введите данные о фильме
+            </h1>
+            <ul className="sm:col-span-2 sm:row-start-2">
+              {Object.entries(attrs).map(([key, text]) => (
+                <li key={key}>
+                  <label htmlFor={key} key={`${key}-label`}>
+                    {text}
+                  </label>
+                  <Field
+                    id={key}
+                    className="input"
+                    name={key}
+                    type="text"
+                    required
+                    autoComplete="off"
+                    key="name-input"
+                  />
+                </li>
+              ))}
+              <li key="seen">
+                <label htmlFor="seen">
+                  <Field id="seen" type="checkbox" name="seen" /> Уже видел
+                </label>
               </li>
-            ))}
-            <li key="seen">
-              <label htmlFor="seen">
-                <input type="checkbox" {...register('seen')} /> Уже видел
-              </label>
-            </li>
-          </ul>
-          <button className="btn block mt-2 w-full sm:m-0">Готово</button>
-        </form>
+            </ul>
+            <button className="btn block mt-2 w-full sm:m-0">Готово</button>
+          </Form>
+        </Formik>
       )}
     </Popup>
   )
