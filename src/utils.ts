@@ -1,5 +1,5 @@
 import { always, filter, identity, join, pipe } from 'ramda'
-import { useEffect, useRef, useState } from 'react'
+import type { QueryFunctionContext } from 'react-query'
 import type { AtomEffect } from 'recoil'
 
 // noinspection JSUnusedGlobalSymbols
@@ -48,32 +48,19 @@ export type Editor<T> = (v: T) => T
 
 export type WhenTruthy<T, N> = (onTrue: Editor<T>) => Editor<T | N>
 
-export async function tryFetch<T>(
-  request: RequestInfo,
+export function fetchOrThrow<P, R>(
+  buildRequest: (params: P) => RequestInfo,
   init?: RequestInit,
-): Promise<T | null> {
-  try {
-    const response = await fetch(request, init)
-    return await response.json()
-  } catch (err) {
-    if (!err.message.includes('The user aborted a request')) {
-      throw err
-    }
-  }
-  return null
-}
-
-export function useFetchOne<T>(
-  fetchData: (signal: AbortSignal) => Promise<T | null>,
 ) {
-  const abortControllerRef = useRef<AbortController>()
-  const [data, setData] = useState<T | null>(null)
-
-  useEffect(() => {
-    abortControllerRef.current?.abort()
-    abortControllerRef.current = new AbortController()
-    fetchData(abortControllerRef.current.signal).then(setData)
-  }, [fetchData])
-
-  return data
+  return async ({
+    queryKey: [, params],
+  }: QueryFunctionContext<[string, P]>) => {
+    const response = await fetch(buildRequest(params), init)
+    if (!response.ok) {
+      throw new Error(
+        `${response.statusText} (${response.status}): ${await response.text()}`,
+      )
+    }
+    return await response.json()
+  }
 }

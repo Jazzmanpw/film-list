@@ -1,13 +1,20 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
+import { QueryClient, QueryClientProvider } from 'react-query'
+import { ReactQueryDevtools } from 'react-query/devtools'
 import { RecoilRoot } from 'recoil'
 import Frame from './frame'
 
+const queryClient = new QueryClient()
+
 ReactDOM.render(
   <React.StrictMode>
-    <RecoilRoot>
-      <Frame />
-    </RecoilRoot>
+    <QueryClientProvider client={queryClient}>
+      <ReactQueryDevtools />
+      <RecoilRoot>
+        <Frame />
+      </RecoilRoot>
+    </QueryClientProvider>
   </React.StrictMode>,
   document.getElementById('root'),
 )

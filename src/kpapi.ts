@@ -1,5 +1,6 @@
 import {
   always,
+  andThen,
   applySpec,
   concat,
   equals,
@@ -11,8 +12,9 @@ import {
   toString,
   type,
 } from 'ramda'
+import type { QueryFunctionContext } from 'react-query'
 import type { FilmData } from './film/model'
-import { tryFetch, whenTruthyOr } from './utils'
+import { fetchOrThrow } from './utils'
 
 type KpApiFilm = {
   filmId: number
@@ -39,18 +41,6 @@ const baseUrl = 'https://kinopoiskapiunofficial.tech/api/v2.1'
 
 const idPrefix = 'kp-'
 
-export const fetchFilmsByKeyword =
-  (keyword: string) => async (signal: AbortSignal) =>
-    whenTruthyOr<KeywordResponseData, null, FilmData[], null>(
-      pipe(prop('films'), map(normalize)),
-      null,
-    )(
-      await tryFetch<KeywordResponseData>(
-        `${baseUrl}/films/search-by-keyword?keyword=${keyword}`,
-        { headers, signal },
-      ),
-    )
-
 const normalize = applySpec({
   countries: pipe<KpApiFilm, KpApiFilm['countries'], string[]>(
     prop('countries'),
@@ -72,3 +62,15 @@ const normalize = applySpec({
   thumbnailUrl: prop('posterUrlPreview'),
   year: prop('year'),
 }) as (film: KpApiFilm) => FilmData
+
+export const fetchFilmsByKeyword = pipe<
+  QueryFunctionContext<[string, string]>,
+  Promise<KeywordResponseData>,
+  Promise<FilmData[]>
+>(
+  fetchOrThrow(
+    (keyword) => `${baseUrl}/films/search-by-keyword?keyword=${keyword}`,
+    { headers },
+  ),
+  andThen(pipe(prop('films'), map(normalize))),
+)
