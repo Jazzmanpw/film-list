@@ -1,13 +1,11 @@
 import React from 'react'
 import { useParams } from 'react-router-dom'
-import { useRecoilValue } from 'recoil'
 import type { Status } from '../film/model'
-import { films as filmsAtom } from './atoms'
+import { useFilms } from './atoms'
 import ListItem from './list-item'
 
 export default function List() {
-  const { status } = useParams<{ status?: Status }>()
-  const films = useRecoilValue(filmsAtom({ status }))
+  const films = useFilms(useParams<{ status?: Status }>())
 
   return (
     <div className="col-span-8 lg:overflow-y-auto 2xl:col-span-9">

@@ -2,7 +2,6 @@ import {
   __,
   always,
   append,
-  applyTo,
   assoc,
   concat,
   contains,
@@ -17,7 +16,6 @@ import {
   max,
   not,
   over,
-  path,
   pipe,
   prop,
   propSatisfies,
@@ -32,7 +30,6 @@ import {
 import { useRef } from 'react'
 import {
   atom,
-  GetRecoilValue,
   selector,
   selectorFamily,
   useRecoilValue,
@@ -54,7 +51,7 @@ export const normalizedFilms = atom({
   effects_UNSTABLE: [createStorageEffect(storageKeys.films, 1)],
 })
 
-export const films = selectorFamily<FilmData[], { status?: Status }>({
+const films = selectorFamily<FilmData[], { status?: Status }>({
   key: 'films',
   get:
     ({ status }) =>
@@ -78,26 +75,6 @@ export const films = selectorFamily<FilmData[], { status?: Status }>({
       )
       return process(normFilms)
     },
-})
-
-export const film = selectorFamily<FilmData | undefined, string>({
-  key: 'film',
-  get: (id) =>
-    pipe<
-      { get: GetRecoilValue },
-      GetRecoilValue,
-      NormalizedFilms | null,
-      FilmData | undefined
-    >(
-      prop('get'),
-      applyTo(normalizedFilms) as (
-        fn: GetRecoilValue,
-      ) => NormalizedFilms | null,
-      whenTruthyOr<NormalizedFilms, null, FilmData, undefined>(
-        path<FilmData>(['entities', 'films', id]),
-        undefined,
-      ),
-    ),
 })
 
 const customPrefix = 'custom-'
@@ -124,6 +101,8 @@ const nextCustomIdSelector = selector<string>({
     )(get(normalizedFilms)?.result)
   },
 })
+
+export const useFilms = pipe(films, useRecoilValue)
 
 export function useAddFilm() {
   return useUndo(

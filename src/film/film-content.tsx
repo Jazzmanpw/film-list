@@ -1,13 +1,12 @@
 import React from 'react'
 import { useParams } from 'react-router-dom'
-import { useRecoilValue } from 'recoil'
 import ExternalLink from '../external-link'
-import { film as filmAtom } from '../list/atoms'
+import { useFilm } from './atoms'
 import Film from './model'
 
 export default function FilmContent() {
-  const { id } = useParams<{ id: string }>()
-  const film = useRecoilValue(filmAtom(id))
+  const film = useFilm(useParams<{ id: string }>())
+
   return film ? (
     <article className="flex flex-col gap-2 md:flex-row">
       <img
@@ -21,22 +20,21 @@ export default function FilmContent() {
           <ExternalLink href={film.href} size="md" target={'_blank'} />
         </h1>
         <h2 className="text-l text-gray-500 lg:text-xl">{film.originalName}</h2>
-        {film.year ? (
-          <p>
-            <b className="font-bold">Год:</b> {film.year}
-          </p>
-        ) : null}
-        {film.countries?.length ? (
-          <p>
-            <b className="font-bold">Страны:</b> {film.countries.join(', ')}
-          </p>
-        ) : null}
-        {film.genres?.length ? (
-          <p>
-            <b className="font-bold">Жанры:</b> {film.genres.join(', ')}
-          </p>
-        ) : null}
+        <Label title="Год" value={film.year} />
+        <Label title="Страны" value={film.countries} />
+        <Label title="Жанры" value={film.genres} />
       </section>
     </article>
+  ) : null
+}
+
+type LabelProps = { title: string; value?: string | string[] }
+
+function Label({ title, value }: LabelProps) {
+  return value ? (
+    <p>
+      <b className="font-bold">{title}:</b>{' '}
+      {typeof value === 'string' ? value : value.join(', ')}
+    </p>
   ) : null
 }
