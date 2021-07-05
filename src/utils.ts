@@ -1,6 +1,6 @@
-import { always, filter, identity, join, pipe } from 'ramda'
+import { always, applyTo, filter, identity, join, pipe, prop } from 'ramda'
 import type { QueryFunctionContext } from 'react-query'
-import type { AtomEffect } from 'recoil'
+import type { AtomEffect, GetRecoilValue, RecoilValue } from 'recoil'
 
 // noinspection JSUnusedGlobalSymbols
 export function log<T>(v: T) {
@@ -64,3 +64,12 @@ export function fetchOrThrow<P, R>(
     return await response.json()
   }
 }
+
+export const fromRecoilValue =
+  <V>(recoilValue: RecoilValue<V>) =>
+  <R>(selector: (v: V) => R) =>
+    pipe<{ get: GetRecoilValue }, GetRecoilValue, V, R>(
+      prop('get'),
+      applyTo(recoilValue) as (fn: GetRecoilValue) => V,
+      selector,
+    )

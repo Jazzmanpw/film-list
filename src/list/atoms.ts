@@ -5,7 +5,6 @@ import {
   assoc,
   concat,
   contains,
-  defaultTo,
   dissocPath,
   drop,
   equals,
@@ -18,6 +17,7 @@ import {
   over,
   pipe,
   prop,
+  propOr,
   propSatisfies,
   reduce,
   reject,
@@ -43,63 +43,58 @@ import Film, {
 } from '../film/model'
 import { createStorageEffect, storageKeys } from '../storage'
 import { useUndo } from '../undo-modal'
-import { Editor, WhenTruthy, whenTruthy, whenTruthyOr } from '../utils'
+import {
+  Editor,
+  fromRecoilValue,
+  WhenTruthy,
+  whenTruthy,
+  whenTruthyOr,
+} from '../utils'
 
-export const normalizedFilms = atom({
+const normalizedFilms = atom({
   default: null as NormalizedFilms | null,
-  key: 'normalizedFilms',
+  key: 'films/normalized',
   effects_UNSTABLE: [createStorageEffect(storageKeys.films, 1)],
 })
 
+export const fromNormalizedFilms = fromRecoilValue(normalizedFilms)
+
 const films = selectorFamily<FilmData[], { status?: Status }>({
   key: 'films',
-  get:
-    ({ status }) =>
-    ({ get }) => {
-      const normFilms = get(normalizedFilms)
-      if (!normFilms) {
-        return []
-      }
-
-      const process = pipe(
-        prop('result') as (films: NormalizedFilms) => number[],
-        map(prop(__, normFilms.entities.films)),
-        status
-          ? filter<FilmData, 'array'>(
-              propSatisfies<boolean | undefined, FilmData>(
-                pipe(not, equals(status === Status.new)),
-                'seen',
-              ),
-            )
-          : identity,
-      )
-      return process(normFilms)
-    },
+  get: ({ status }) =>
+    fromNormalizedFilms(
+      whenTruthyOr<NormalizedFilms, null, FilmData[], FilmData[]>(
+        ({ entities: { films }, result: ids }) =>
+          pipe(
+            map(prop(__, films)),
+            status
+              ? filter<FilmData, 'array'>(
+                  propSatisfies<boolean | undefined, FilmData>(
+                    pipe(not, equals(status === Status.new)),
+                    'seen',
+                  ),
+                )
+              : identity,
+          )(ids),
+        [],
+      ),
+    ),
 })
 
 const customPrefix = 'custom-'
 const nextCustomIdSelector = selector<string>({
-  key: 'nextCustomId',
-  get({ get }) {
-    return pipe<
-      string[] | undefined,
-      string[],
-      string[],
-      number[],
-      number,
-      number,
-      string,
-      string
-    >(
-      defaultTo([]),
-      filter(startsWith(customPrefix)),
+  key: 'films/nextCustomId',
+  get: fromNormalizedFilms(
+    pipe(
+      propOr([], 'result'),
+      filter<string, 'array'>(startsWith(customPrefix)),
       map(pipe<string, string, number>(drop(customPrefix.length), Number)),
       reduce<number, number>(max, 0),
       inc,
       toString,
       concat(customPrefix),
-    )(get(normalizedFilms)?.result)
-  },
+    ),
+  ),
 })
 
 export const useFilms = pipe(films, useRecoilValue)

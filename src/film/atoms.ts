@@ -1,25 +1,16 @@
-import { applyTo, path, pipe, prop } from 'ramda'
-import { GetRecoilValue, selectorFamily, useRecoilValue } from 'recoil'
-import { normalizedFilms } from '../list/atoms'
+import { pathOr, pipe } from 'ramda'
+import { selectorFamily, useRecoilValue } from 'recoil'
+import { fromNormalizedFilms } from '../list/atoms'
 import { whenTruthyOr } from '../utils'
 import type { FilmData, NormalizedFilms } from './model'
 
-const film = selectorFamily<FilmData | undefined, { id: string }>({
+const film = selectorFamily<FilmData | null, { id: string }>({
   key: 'film',
   get: ({ id }) =>
-    pipe<
-      { get: GetRecoilValue },
-      GetRecoilValue,
-      NormalizedFilms | null,
-      FilmData | undefined
-    >(
-      prop('get'),
-      applyTo(normalizedFilms) as (
-        fn: GetRecoilValue,
-      ) => NormalizedFilms | null,
-      whenTruthyOr<NormalizedFilms, null, FilmData, undefined>(
-        path<FilmData>(['entities', 'films', id]),
-        undefined,
+    fromNormalizedFilms(
+      whenTruthyOr<NormalizedFilms, null, FilmData, null>(
+        pathOr<FilmData | null>(null, ['entities', 'films', id]),
+        null,
       ),
     ),
 })
