@@ -1,4 +1,5 @@
 import { always, applyTo, filter, identity, join, pipe, prop } from 'ramda'
+import type { FocusEvent } from 'react'
 import type { QueryFunctionContext } from 'react-query'
 import type { AtomEffect, GetRecoilValue, RecoilValue } from 'recoil'
 
@@ -73,3 +74,25 @@ export const fromRecoilValue =
       applyTo(recoilValue) as (fn: GetRecoilValue) => V,
       selector,
     )
+
+export function onFocusOut(
+  getParent: () => HTMLElement | null,
+  callback: () => void,
+) {
+  return ({ relatedTarget }: FocusEvent) => {
+    if (!relatedTarget) {
+      // the relatedTarget is not any element within the document
+      callback()
+      return
+    }
+
+    const parent = getParent()
+    if (
+      parent &&
+      relatedTarget instanceof Element &&
+      !parent.contains(relatedTarget)
+    ) {
+      callback()
+    }
+  }
+}

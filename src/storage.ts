@@ -2,6 +2,7 @@ import { AtomEffect, DefaultValue } from 'recoil'
 
 export const storageKeys = {
   films: 'film-list_films' as const,
+  tags: 'film-list_tags' as const,
 }
 
 type StorageKey = typeof storageKeys[keyof typeof storageKeys]

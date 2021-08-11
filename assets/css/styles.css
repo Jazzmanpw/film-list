@@ -15,6 +15,9 @@
   .btn {
     @apply px-4 py-2 bg-red-400 rounded-sm font-semibold hover:bg-red-200 focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-offset-1;
   }
+  .btn[disabled] {
+    @apply opacity-70 cursor-not-allowed;
+  }
   /* styling third-party popup */
   .custom-film-content {
     @apply w-11/12 sm:w-8/12 lg:w-6/12;

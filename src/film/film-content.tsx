@@ -1,6 +1,7 @@
 import React from 'react'
 import { useParams } from 'react-router-dom'
 import ExternalLink from '../external-link'
+import TagsContent from '../tag/tags-content'
 import { useFilm } from './atoms'
 import Film from './model'
 
@@ -12,7 +13,7 @@ export default function FilmContent() {
       <img
         src={film.thumbnailUrl}
         alt={Film.toString(film)}
-        className="w-1/3 object-cover object-center lg:w-1/4 xl:w-1/5 2xl:w-1/6"
+        className="w-1/3 object-cover object-center self-start lg:w-1/4 xl:w-1/5 2xl:w-1/6"
       />
       <section className="flex flex-col gap-2">
         <h1 className="text-xl font-bold lg:text-3xl">
@@ -23,6 +24,7 @@ export default function FilmContent() {
         <Label title="Год" value={film.year} />
         <Label title="Страны" value={film.countries} />
         <Label title="Жанры" value={film.genres} />
+        <TagsContent film={film} />
       </section>
     </article>
   ) : null
