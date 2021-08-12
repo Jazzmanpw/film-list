@@ -1,6 +1,7 @@
 import { Field, Form, Formik } from 'formik'
 import { lensProp, over } from 'ramda'
 import React from 'react'
+import Button from '../button'
 import type { FilmData } from '../film/model'
 import Palette from './color/palette'
 import TagChip from './tag-chip'
@@ -55,9 +56,9 @@ export default function TagSelector({ addTag, film }: Props) {
               className="w-max self-center block mb-1"
             />
             {/* TODO: add a warning if a user tries to create a tag with a name that already exists */}
-            <button className="btn" type="submit" disabled={!newTag.value}>
+            <Button type="submit" disabled={!newTag.value}>
               Сохранить и добавить
-            </button>
+            </Button>
           </section>
         </Form>
       )}

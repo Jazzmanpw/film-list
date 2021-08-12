@@ -6,6 +6,7 @@ import {
   useResetRecoilState,
   useSetRecoilState,
 } from 'recoil'
+import Button from './button'
 
 const undoPopupLifetime = 3000
 
@@ -60,7 +61,7 @@ export default function UndoModal() {
         className="fixed bottom-4 mx-auto p-4 bg-red-100 flex flex-col w-80 gap-4"
       >
         <label className="font-medium">Отменить {lastAction.label}?</label>
-        <button className="btn self-end">Отменить</button>
+        <Button className="self-end">Отменить</Button>
       </form>
     </div>
   )

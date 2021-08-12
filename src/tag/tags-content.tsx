@@ -1,5 +1,6 @@
 import { not } from 'ramda'
 import React, { useState } from 'react'
+import Button from '../button'
 import type { FilmData } from '../film/model'
 import { useAddTagToFilm } from './atoms'
 import TagList from './tag-list'
@@ -17,8 +18,8 @@ export default function TagsContent({ film }: Props) {
       <TagList
         filter={film}
         extraChild={
-          <button
-            className="btn text-xs px-2 py-1.5 leading-none"
+          <Button
+            size="small"
             type="button"
             onClick={() => setTagSelectorVisible(not)}
           >
@@ -30,7 +31,7 @@ export default function TagsContent({ film }: Props) {
                 Добавить метку
               </>
             )}
-          </button>
+          </Button>
         }
       />
       {tagSelectorVisible ? <TagSelector addTag={addTag} film={film} /> : null}

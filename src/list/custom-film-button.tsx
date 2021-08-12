@@ -2,6 +2,7 @@ import { Field, Form, Formik } from 'formik'
 import { pipe } from 'ramda'
 import React from 'react'
 import Popup from 'reactjs-popup'
+import Button from '../button'
 import type { CustomFilm } from '../film/model'
 import { useAddCustomFilm } from './atoms'
 
@@ -17,11 +18,7 @@ export default function CustomFilmButton() {
   return (
     <Popup
       modal
-      trigger={
-        <button className="btn" type="button">
-          Не нашли фильм?
-        </button>
-      }
+      trigger={<Button type="button">Не нашли фильм?</Button>}
       className="custom-film"
     >
       {(close: () => void) => (
@@ -62,7 +59,7 @@ export default function CustomFilmButton() {
                 </label>
               </li>
             </ul>
-            <button className="btn block mt-2 w-full sm:m-0">Готово</button>
+            <Button className="block mt-2 w-full sm:m-0">Готово</Button>
           </Form>
         </Formik>
       )}

@@ -27,7 +27,10 @@ export default function FilmInput() {
     useDebouncedCallback(pipe(pathOr('', ['target', 'value']), setKeyword), 200)
 
   return (
-    <form className="col-span-4 col-start-1 row-span-full 2xl:col-span-3 lg:overflow-y-auto">
+    <form
+      className="col-span-4 col-start-1 row-span-full 2xl:col-span-3 lg:overflow-y-auto"
+      onSubmit={(e) => e.preventDefault()}
+    >
       <input
         className="input lg:sticky lg:top-0"
         type="text"
@@ -43,6 +46,7 @@ export default function FilmInput() {
                 assoc('seen', status === Status.seen),
                 addFilm,
               )}
+              key={id}
             />
           ))}
           <li className="p-1" key="add-custom-film">
