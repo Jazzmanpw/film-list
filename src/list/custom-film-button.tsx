@@ -4,6 +4,7 @@ import React from 'react'
 import Popup from 'reactjs-popup'
 import Button from '../button'
 import type { CustomFilm } from '../film/model'
+import Input from '../input'
 import { useAddCustomFilm } from './atoms'
 
 const attrs = {
@@ -44,7 +45,7 @@ export default function CustomFilmButton() {
                   </label>
                   <Field
                     id={key}
-                    className="input"
+                    as={Input}
                     name={key}
                     type="text"
                     required

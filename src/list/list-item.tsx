@@ -27,7 +27,7 @@ export default function ListItem({ film }: Props) {
         key={film.id}
       >
         <img
-          className="w-1/4 object-cover object-center sm:w-1/6 md:w-1/4 xl:w-1/6 2xl:w-1/4"
+          className="w-1/4 object-cover object-center self-start sm:w-1/6 md:w-1/4 xl:w-1/6 2xl:w-1/4"
           src={film.thumbnailUrl}
           alt={Film.toString(film)}
         />

@@ -15,7 +15,7 @@ export default function FilmContent() {
         alt={Film.toString(film)}
         className="w-1/3 object-cover object-center self-start lg:w-1/4 xl:w-1/5 2xl:w-1/6"
       />
-      <section className="flex flex-col gap-2">
+      <section className="flex-1 flex flex-col gap-2">
         <h1 className="text-xl font-bold lg:text-3xl">
           {film.name}
           <ExternalLink href={film.href} size="md" target={'_blank'} />

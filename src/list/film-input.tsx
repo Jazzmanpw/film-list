@@ -5,6 +5,7 @@ import { useParams } from 'react-router-dom'
 import { useDebouncedCallback } from 'use-debounce'
 import ExternalLink from '../external-link'
 import Film, { FilmData, NormalizedFilms, Status } from '../film/model'
+import Input from '../input'
 import { fetchFilmsByKeyword } from '../kpapi'
 import { useAddFilm } from './atoms'
 import CustomFilmButton from './custom-film-button'
@@ -31,8 +32,8 @@ export default function FilmInput() {
       className="col-span-4 col-start-1 row-span-full 2xl:col-span-3 lg:overflow-y-auto"
       onSubmit={(e) => e.preventDefault()}
     >
-      <input
-        className="input lg:sticky lg:top-0"
+      <Input
+        className="lg:sticky lg:top-0"
         type="text"
         placeholder="Ищите фильмы по названию"
         onChange={onChange}

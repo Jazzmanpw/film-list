@@ -9,9 +9,6 @@
 }
 
 @layer components {
-  .input {
-    @apply px-2 py-0.5 w-full border-2 border-red-200 rounded-sm outline-none focus:border-red-300;
-  }
   /* styling third-party popup */
   .custom-film-content {
     @apply w-11/12 sm:w-8/12 lg:w-6/12;

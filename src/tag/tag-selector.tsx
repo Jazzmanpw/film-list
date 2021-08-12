@@ -3,6 +3,7 @@ import { lensProp, over } from 'ramda'
 import React from 'react'
 import Button from '../button'
 import type { FilmData } from '../film/model'
+import Input from '../input'
 import Palette from './color/palette'
 import TagChip from './tag-chip'
 import TagList from './tag-list'
@@ -29,7 +30,7 @@ export default function TagSelector({ addTag, film }: Props) {
           <section className="flex-1">
             <Field
               name="value"
-              className="input"
+              as={Input}
               placeholder="Найти или создать метку..."
               autoComplete="off"
             />
