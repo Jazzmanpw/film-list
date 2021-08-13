@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom'
 import ExternalLink from '../external-link'
 import TagsContent from '../tag/tags-content'
 import { useFilm } from './atoms'
+import FilmEditor from './film-editor'
 import Film from './model'
 
 export default function FilmContent() {
@@ -19,6 +20,7 @@ export default function FilmContent() {
         <h1 className="text-xl font-bold lg:text-3xl">
           {film.name}
           <ExternalLink href={film.href} size="md" target={'_blank'} />
+          <FilmEditor film={film} />
         </h1>
         <h2 className="text-l text-gray-500 lg:text-xl">{film.originalName}</h2>
         <Label title="Год" value={film.year} />

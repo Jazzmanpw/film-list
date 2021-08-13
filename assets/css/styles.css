@@ -10,7 +10,7 @@
 
 @layer components {
   /* styling third-party popup */
-  .custom-film-content {
+  .film-editor-form-content {
     @apply w-11/12 sm:w-8/12 lg:w-6/12;
   }
 }

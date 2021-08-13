@@ -21,7 +21,8 @@ An app to store films you've watched or want to watch, with your comments, ratin
 - [x] local storage versioning
 - [x] two lists instead of one
 - [x] "undo" popup on a timer
-- [ ] custom tags
+- [x] custom tags
+- [ ] edit film
 - [ ] search by genres and custom tags
 - [ ] negative search by genres and tags
 - [ ] a "would watch again" tag

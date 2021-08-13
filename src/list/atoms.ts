@@ -36,7 +36,7 @@ import {
   useSetRecoilState,
 } from 'recoil'
 import Film, {
-  CustomFilm,
+  EditableFilmData,
   FilmData,
   NormalizedFilms,
   Status,
@@ -108,7 +108,7 @@ export function useAddFilm() {
 }
 
 export function useAddCustomFilm() {
-  return pipe<CustomFilm, FilmData, void>(
+  return pipe<EditableFilmData, FilmData, void>(
     assoc('id', useRecoilValue(nextCustomIdSelector)),
     useAddFilm(),
   )
