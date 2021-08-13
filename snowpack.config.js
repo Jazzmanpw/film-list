@@ -14,6 +14,7 @@ module.exports = {
   ],
   devOptions: {
     open: 'none',
+    tailwindConfig: './tailwind.config.js',
   },
   buildOptions: {
     /* ... */

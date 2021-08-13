@@ -10,9 +10,12 @@ type Props = {
 }
 export default function TagChip({ data, className: extraClass }: Props) {
   const className = joinTruthy([
-    'text-xs px-2 py-1 leading-none font-semibold rounded-r-full',
-    Tag.toColorClass(data),
+    'text-xs px-2 py-1 font-semibold rounded-r-full',
     extraClass,
   ])
-  return <span className={className}>{data.value}</span>
+  return (
+    <span className={className} style={Tag.toColorStyle(data)}>
+      {data.value}
+    </span>
+  )
 }
