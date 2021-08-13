@@ -40,7 +40,7 @@ export default function SwitchToggle({
         <div className="block bg-red-100 w-7 h-4 rounded-full" />
         <div
           className={joinTruthy([
-            `absolute left-0.5 top-0.5 bg-white w-3 h-3 rounded-full transition`,
+            `absolute left-0.5 top-0.5 bg-white w-3 h-3 rounded-full`,
             !checked && 'bg-red-300',
             checked && 'bg-red-600 transform translate-x-full',
           ])}

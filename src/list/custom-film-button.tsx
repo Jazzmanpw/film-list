@@ -33,7 +33,7 @@ export default function CustomFilmButton() {
           }}
           onSubmit={pipe(addCustomFilm, close)}
         >
-          <Form className="grid sm:p-2 sm:grid-cols-popup-content">
+          <Form className="grid sm:p-2 sm:grid-cols-[1fr,auto]">
             <h1 className="font-medium text-2xl" key="title">
               Введите данные о фильме
             </h1>
