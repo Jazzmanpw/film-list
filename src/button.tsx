@@ -13,13 +13,20 @@ const sizeClassNames = {
 const primaryClassName = 'bg-red-400 hover:bg-red-200 focus:ring-red-400'
 const secondaryClassName = 'bg-gray-100 hover:bg-gray-300 focus:ring-gray-300'
 
-type Props = ButtonHTMLAttributes<HTMLButtonElement> & {
+type Props = Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'type'> & {
   size?: keyof typeof sizeClassNames
   secondary?: boolean
+  submits?: boolean
 }
 
 function Button(
-  { size = 'normal', secondary, className: extraClassName, ...props }: Props,
+  {
+    size = 'normal',
+    secondary,
+    submits,
+    className: extraClassName,
+    ...props
+  }: Props,
   ref: ForwardedRef<HTMLButtonElement>,
 ) {
   return (
@@ -31,6 +38,7 @@ function Button(
         extraClassName,
       ])}
       {...props}
+      type={submits ? 'submit' : 'button'}
       ref={ref}
     />
   )

@@ -47,10 +47,10 @@ export default function EditFilmForm({ film, onCancel, onSubmit }: Props) {
           </li>
         </ul>
         <section className="flex gap-2 mt-2 w-full md:m-0">
-          <Button className="flex-1" type="button" secondary onClick={onCancel}>
+          <Button className="flex-1" secondary onClick={onCancel}>
             Отмена
           </Button>
-          <Button className="flex-1" type="submit">
+          <Button className="flex-1" submits>
             Готово
           </Button>
         </section>

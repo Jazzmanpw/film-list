@@ -61,7 +61,9 @@ export default function UndoModal() {
         className="fixed bottom-4 mx-auto p-4 bg-red-100 flex flex-col w-80 gap-4"
       >
         <label className="font-medium">Отменить {lastAction.label}?</label>
-        <Button className="self-end">Отменить</Button>
+        <Button className="self-end" submits>
+          Отменить
+        </Button>
       </form>
     </div>
   )

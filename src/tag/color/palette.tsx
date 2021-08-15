@@ -24,7 +24,6 @@ export default function Palette({ label, name }: Props) {
     <section className="relative" tabIndex={-1} ref={rootRef} onBlur={onBlur}>
       <header>
         <Button
-          type="button"
           size="small"
           secondary
           onClick={() => setExpanded(not)}

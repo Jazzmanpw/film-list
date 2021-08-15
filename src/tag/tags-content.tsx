@@ -18,11 +18,7 @@ export default function TagsContent({ film }: Props) {
       <TagList
         filter={film}
         extraChild={
-          <Button
-            size="small"
-            type="button"
-            onClick={() => setTagSelectorVisible(not)}
-          >
+          <Button size="small" onClick={() => setTagSelectorVisible(not)}>
             {tagSelectorVisible ? (
               <>Скрыть</>
             ) : (

@@ -11,7 +11,7 @@ export default function CustomFilmButton() {
   return (
     <Popup
       modal
-      trigger={<Button type="button">Не нашли фильм?</Button>}
+      trigger={<Button>Не нашли фильм?</Button>}
       closeOnDocumentClick={false}
       className="film-editor-form"
     >

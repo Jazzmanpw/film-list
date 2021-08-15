@@ -54,7 +54,7 @@ export default function TagSelector({ addTag, film }: Props) {
             <Palette name="backgroundColor" label="Фон" />
             <Palette name="textColor" label="Текст" />
             {/* TODO: add a warning if a user tries to create a tag with a name that already exists */}
-            <Button type="submit" size="small" disabled={!newTag.value}>
+            <Button submits size="small" disabled={!newTag.value}>
               Сохранить и добавить
             </Button>
           </section>
