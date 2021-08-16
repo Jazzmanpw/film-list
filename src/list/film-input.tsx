@@ -3,12 +3,12 @@ import React, { useState } from 'react'
 import { useQuery } from 'react-query'
 import { useParams } from 'react-router-dom'
 import { useDebouncedCallback } from 'use-debounce'
-import ExternalLink from '../external-link'
 import Film, { FilmData, NormalizedFilms, Status } from '../film/model'
 import Input from '../input'
 import { fetchFilmsByKeyword } from '../kpapi'
 import { useAddFilm } from './atoms'
 import CustomFilmButton from './custom-film-button'
+import Suggestion from './suggestion'
 
 export default function FilmInput() {
   const [keyword, setKeyword] = useState('')
@@ -43,7 +43,7 @@ export default function FilmInput() {
           {suggestedFilms.result.map((id) => (
             <Suggestion
               film={suggestedFilms.entities.films[id]}
-              onClick={pipe<FilmData, FilmData, void>(
+              onSelect={pipe<FilmData, FilmData, void>(
                 assoc('seen', status === Status.seen),
                 addFilm,
               )}
@@ -58,25 +58,5 @@ export default function FilmInput() {
         'Loading...'
       ) : null}
     </form>
-  )
-}
-
-type SuggestionProps<T> = {
-  film: FilmData
-  onClick: (film: FilmData) => void
-}
-function Suggestion<T>({ film, onClick }: SuggestionProps<T>) {
-  return (
-    <li
-      className="p-0.5 align-middle cursor-pointer hover:bg-red-100"
-      key={film.id}
-      onClick={() => onClick(film)}
-    >
-      <span className="font-semibold">{film.name}</span>
-      {film.originalName ? (
-        <span className="text-gray-500"> {film.originalName}</span>
-      ) : null}
-      <ExternalLink href={film.href} size="sm" target="_blank" />
-    </li>
   )
 }
