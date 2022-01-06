@@ -1,3 +1,4 @@
+import ruToCode from 'Generated/ruToCode.json'
 import {
   always,
   andThen,
@@ -13,6 +14,7 @@ import {
   type,
 } from 'ramda'
 import type { QueryFunctionContext } from 'react-query'
+import Country, { CountryData } from './country/model'
 import type { FilmData } from './film/model'
 import { fetchOrThrow } from './utils'
 
@@ -39,12 +41,19 @@ const headers = new Headers({
 })
 const baseUrl = 'https://kinopoiskapiunofficial.tech/api/v2.1'
 
-const idPrefix = 'kp-'
+const source = 'kp'
+
+const ruToCountry = Country.fromName(ruToCode)
 
 const normalize = applySpec({
-  countries: pipe<KpApiFilm, KpApiFilm['countries'], string[]>(
+  countries: pipe<KpApiFilm, KpApiFilm['countries'], CountryData[]>(
     prop('countries'),
-    map(ifElse(pipe(type, equals('String')), identity, prop('country'))),
+    map(
+      pipe(
+        ifElse(pipe(type, equals('String')), identity, prop('country')),
+        ruToCountry,
+      ),
+    ),
   ),
   genres: pipe<KpApiFilm, KpApiFilm['genres'], string[]>(
     prop('genres'),
@@ -54,11 +63,11 @@ const normalize = applySpec({
   id: pipe<KpApiFilm, number, string, string>(
     prop('filmId'),
     toString,
-    concat(idPrefix),
+    concat(`${source}-`),
   ),
   name: prop('nameRu'),
   originalName: prop('nameEn'),
-  source: always('kp'),
+  source: always(source),
   thumbnailUrl: prop('posterUrlPreview'),
   year: prop('year'),
 }) as (film: KpApiFilm) => FilmData

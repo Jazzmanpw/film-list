@@ -28,6 +28,7 @@ An app to store films you've watched or want to watch, with your comments, ratin
 - [ ] a "would watch again" tag
 - [ ] my rating (five-point scale with emojis from "hate" to "adore")
 - [ ] custom comment
+- [ ] playlist
 - [ ] authorize and store films for a user on a server
 - [ ] publishing the server
 - [ ] publishing the site

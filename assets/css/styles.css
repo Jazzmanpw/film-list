@@ -13,4 +13,7 @@
   .film-editor-form-content {
     @apply w-11/12 sm:w-8/12 lg:w-6/12;
   }
+  .country-select-content {
+    @apply h-2/3 w-72;
+  }
 }

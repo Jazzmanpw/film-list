@@ -1,5 +1,6 @@
 import { normalize, schema } from 'normalizr'
 import { lensPath, lensProp } from 'ramda'
+import type { CountryData } from '../country/model'
 import { joinTruthy } from '../utils'
 
 const lenses = {
@@ -21,8 +22,8 @@ export enum Status {
 }
 
 export type FilmData = {
-  countries?: string[]
-  genres?: string[]
+  countries: CountryData[]
+  genres: string[]
   href?: string
   id: string
   name: string

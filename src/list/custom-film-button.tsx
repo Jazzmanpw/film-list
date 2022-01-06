@@ -18,11 +18,12 @@ export default function CustomFilmButton() {
       {(close: () => void) => (
         <EditFilmForm
           film={{
-            source: 'custom',
+            countries: [],
+            genres: [],
             name: '',
-            originalName: '',
-            thumbnailUrl: '',
             seen: false,
+            source: 'custom',
+            thumbnailUrl: '',
           }}
           onSubmit={pipe(addCustomFilm, close)}
           onCancel={close}

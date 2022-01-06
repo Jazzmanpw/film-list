@@ -4,7 +4,7 @@ import {
   append,
   assoc,
   concat,
-  contains,
+  includes,
   dissocPath,
   drop,
   equals,
@@ -147,7 +147,7 @@ function useAddFilmInternal() {
     (film: FilmData) =>
       whenTruthyOr<NormalizedFilms, null, NormalizedFilms, NormalizedFilms>(
         unless(
-          pipe(view(Film.lenses.result), contains<string>(film.id)),
+          pipe(view(Film.lenses.result), includes<string>(film.id)),
           pipe(
             set(Film.lenses.film(film.id), film),
             over(Film.lenses.result, append(film.id)),

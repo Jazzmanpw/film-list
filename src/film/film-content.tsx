@@ -1,5 +1,7 @@
-import React from 'react'
+import React, { ComponentType } from 'react'
 import { useParams } from 'react-router-dom'
+import CountryLabel from '../country/country-label'
+import Country, { CountryData } from '../country/model'
 import ExternalLink from '../external-link'
 import TagsContent from '../tag/tags-content'
 import { useFilm } from './atoms'
@@ -23,22 +25,63 @@ export default function FilmContent() {
           <FilmEditor film={film} />
         </h1>
         <h2 className="text-l text-gray-500 lg:text-xl">{film.originalName}</h2>
-        <Label title="Год" value={film.year} />
-        <Label title="Страны" value={film.countries} />
-        <Label title="Жанры" value={film.genres} />
+        <Label title="Год" value={film.year} valueComponent={YearLabelValue} />
+        <Label
+          title="Страны"
+          value={film.countries}
+          valueComponent={CountryLabelValue}
+        />
+        <Label
+          title="Жанры"
+          value={film.genres}
+          valueComponent={GenreLabelValue}
+        />
         <TagsContent film={film} />
       </section>
     </article>
   ) : null
 }
 
-type LabelProps = { title: string; value?: string | string[] }
+type LabelProps<T> = {
+  title: string
+  value?: T
+  valueComponent: ComponentType<{ value: T }>
+}
 
-function Label({ title, value }: LabelProps) {
+function Label<T>({
+  title,
+  value,
+  valueComponent: ValueComponent,
+}: LabelProps<T>) {
   return value ? (
-    <p>
-      <b className="font-bold">{title}:</b>{' '}
-      {typeof value === 'string' ? value : value.join(', ')}
+    <p className="flex gap-2">
+      <b className="font-bold">{title}:</b>
+      <ValueComponent value={value} />
     </p>
   ) : null
+}
+
+function YearLabelValue({ value }: { value: string }) {
+  return <>{value}</>
+}
+
+function CountryLabelValue({ value: countries }: { value: CountryData[] }) {
+  return (
+    <>
+      {countries.filter(Country.hasCode).map((country) => {
+        return (
+          <span
+            className="self-center after:content-[','] last-of-type:after:content-['']"
+            key={country.code}
+          >
+            <CountryLabel country={country} iconClass="inline" />
+          </span>
+        )
+      })}
+    </>
+  )
+}
+
+function GenreLabelValue({ value: genres }: { value: string[] }) {
+  return <>{genres.join(', ')}</>
 }
