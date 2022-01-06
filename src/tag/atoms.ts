@@ -13,6 +13,7 @@ import {
   pipe,
   prop,
   view,
+  without,
 } from 'ramda'
 import { atom, selectorFamily, useRecoilValue, useSetRecoilState } from 'recoil'
 import type { FilmData } from '../film/model'
@@ -89,6 +90,17 @@ export function useAddTagToFilm(film: FilmData) {
           lensProp('result'),
           ifElse(includes(tag.value), identity, append(tag.value)),
         ),
+      ),
+    )
+}
+
+export function useRemoveTagFromFilm(film: FilmData) {
+  const setTags = useSetRecoilState(normalizedTags)
+  return (tag: TagData) =>
+    setTags(
+      over(
+        lensPath(['entities', 'tags', tag.value, 'films']),
+        without([film.id]),
       ),
     )
 }
