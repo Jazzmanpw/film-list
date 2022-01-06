@@ -17,6 +17,7 @@ export default function ExternalLink({ href, size, target }: Props) {
       className={`inline-block ${sizeClasses[size].a} align-middle`}
       href={href}
       target={target}
+      onClick={(e) => e.stopPropagation()}
     >
       <svg
         className={`text-red-500 inline ${sizeClasses[size].svg} align-top hover:text-red-600`}

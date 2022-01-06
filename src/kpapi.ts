@@ -43,7 +43,11 @@ const baseUrl = 'https://kinopoiskapiunofficial.tech/api/v2.1'
 
 const source = 'kp'
 
-const ruToCountry = Country.fromName(ruToCode)
+// noinspection NonAsciiCharacters
+const ruToCountry = Country.fromName(ruToCode, {
+  США: 'Соединенные Штаты',
+  'Корея Южная': 'Республика Корея',
+})
 
 const normalize = applySpec({
   countries: pipe<KpApiFilm, KpApiFilm['countries'], CountryData[]>(
